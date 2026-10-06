@@ -1,0 +1,2 @@
+project     = "solventa"
+environment = "dev"
