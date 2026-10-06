@@ -10,7 +10,7 @@ permissions:
   contents: read
 
 jobs:
-  terraform:
+  terraform-deploy:
     runs-on: ubuntu-latest
     environment: dev
     steps:
@@ -30,7 +30,7 @@ jobs:
 
       - name: Terraform Init
         run: |
-          terraform -chdir=infra/terraform init \
+          terraform -chdir=src/environments/dev init \
             -backend-config="bucket=${{ secrets.BACKEND_BUCKET }}" \
             -backend-config="key=${{ secrets.BACKEND_KEY }}" \
             -backend-config="region=${{ secrets.AWS_REGION }}" \
