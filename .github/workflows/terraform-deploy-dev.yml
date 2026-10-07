@@ -51,7 +51,7 @@ jobs:
         run: |
           terraform -chdir=src/environments/dev apply \
             -var-file="../../../config/dev/dev.tfvars" \
-            var="aurora_database_name=${{ secrets.AURORA_DATABASE_NAME }}" \
+            -var="aurora_database_name=${{ secrets.AURORA_DATABASE_NAME }}" \
             -var="aurora_master_username=${{ secrets.AURORA_MASTER_USERNAME }}" \
             -var="aurora_master_password=${{ secrets.AURORA_MASTER_PASSWORD }}" \
             -input=false \
