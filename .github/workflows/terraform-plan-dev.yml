@@ -8,7 +8,7 @@ permissions:
   contents: read
 
 jobs:
-  terraform-deploy:
+  terraform-plan-dev:
     runs-on: ubuntu-latest
     environment: dev
     steps:

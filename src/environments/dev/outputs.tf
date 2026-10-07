@@ -23,47 +23,47 @@ output "private_database_subnet_ids" {
   value       = module.vpc.private_database_subnet_ids
 }
 
-output "load_balancer_arn" {
-  description = "ARN of the application load balancer."
-  value       = module.application_load_balancer.load_balancer_arn
-}
+# output "load_balancer_arn" {
+#   description = "ARN of the application load balancer."
+#   value       = module.application_load_balancer.load_balancer_arn
+# }
 
-output "eks_cluster_id" {
-  description = "ID of the development EKS cluster."
-  value       = module.eks.cluster_id
-}
+# output "eks_cluster_id" {
+#   description = "ID of the development EKS cluster."
+#   value       = module.eks.cluster_id
+# }
 
-output "eks_cluster_endpoint" {
-  description = "Endpoint of the development EKS cluster."
-  value       = module.eks.cluster_endpoint
-}
+# output "eks_cluster_endpoint" {
+#   description = "Endpoint of the development EKS cluster."
+#   value       = module.eks.cluster_endpoint
+# }
 
-output "aurora_cluster_endpoint" {
-  description = "Endpoint of the Aurora PostgreSQL cluster."
-  value       = module.aurora.cluster_endpoint
-}
+# output "aurora_cluster_endpoint" {
+#   description = "Endpoint of the Aurora PostgreSQL cluster."
+#   value       = module.aurora.cluster_endpoint
+# }
 
-output "events_queue_url" {
-  description = "URL of the development events queue."
-  value       = module.events_queue.queue_url
-}
+# output "assets_bucket_name" {
+#   description = "Name of the environment assets bucket."
+#   value       = module.assets_bucket.bucket_name
+# }
 
-output "notifications_topic_arn" {
-  description = "ARN of the development notifications topic."
-  value       = module.notifications_topic.topic_arn
-}
+# output "assets_bucket_arn" {
+#   description = "ARN of the environment assets bucket."
+#   value       = module.assets_bucket.bucket_arn
+# }
 
-output "api_gateway_endpoint" {
-  description = "Endpoint of the API Gateway."
-  value       = module.api_gateway.api_endpoint
-}
+# output "api_gateway_endpoint" {
+#   description = "Endpoint of the API Gateway."
+#   value       = module.api_gateway.api_endpoint
+# }
 
-output "assets_bucket_name" {
-  description = "Name of the environment assets bucket."
-  value       = module.assets_bucket.bucket_name
-}
+# output "events_queue_url" {
+#   description = "URL of the development events queue."
+#   value       = module.events_queue.queue_url
+# }
 
-output "assets_bucket_arn" {
-  description = "ARN of the environment assets bucket."
-  value       = module.assets_bucket.bucket_arn
-}
+# output "notifications_topic_arn" {
+#   description = "ARN of the development notifications topic."
+#   value       = module.notifications_topic.topic_arn
+# }

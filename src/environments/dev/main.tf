@@ -60,25 +60,6 @@ module "vpc" {
 #   tags                   = var.tags
 # }
 
-# module "kms" {
-#   source = "../../modules/kms"
-
-#   key_name                = "${var.project}-${var.environment}-key"
-#   alias_name              = "alias/${var.project}-${var.environment}"
-#   description             = "KMS key for Solventa ${var.environment} secrets and data"
-#   deletion_window_in_days = var.kms_deletion_window_in_days
-#   enable_key_rotation     = var.kms_enable_key_rotation
-#   tags                    = var.tags
-# }
-
-# module "assets_bucket" {
-#   source = "../../modules/s3_bucket"
-
-#   bucket_name = var.assets_bucket_name
-#   kms_key_id  = module.kms.key_id
-#   tags        = var.tags
-# }
-
 # module "aurora" {
 #   source = "../../modules/aurora"
 
@@ -107,6 +88,41 @@ module "vpc" {
 #   tags                         = var.tags
 # }
 
+# module "assets_bucket" {
+#   source = "../../modules/s3_bucket"
+
+#   bucket_name = var.assets_bucket_name
+#   kms_key_id  = module.kms.key_id
+#   tags        = var.tags
+# }
+
+# module "cognito" {
+#   source = "../../modules/cognito"
+
+#   user_pool_name               = "${var.project}-${var.environment}-users"
+#   username_attributes          = var.cognito_username_attributes
+#   client_names                 = var.cognito_client_names
+#   allowed_oauth_scopes         = var.cognito_allowed_oauth_scopes
+#   supported_identity_providers = var.cognito_supported_identity_providers
+#   generate_secret              = var.cognito_generate_secret
+#   callback_urls                = var.cognito_callback_urls
+#   logout_urls                  = var.cognito_logout_urls
+#   tags                         = var.tags
+# }
+
+# module "api_gateway" {
+#   source = "../../modules/api_gateway"
+
+#   api_name                     = "${var.project}-${var.environment}-api"
+#   api_description              = "Solventa API Gateway for ${var.environment}"
+#   stage_name                   = var.api_stage_name
+#   integration_uri              = "http://${module.application_load_balancer.load_balancer_dns_name}"
+#   route_key                    = var.api_route_key
+#   access_log_retention_in_days = var.api_access_log_retention_in_days
+#   access_log_format            = var.api_access_log_format
+#   tags                         = var.tags
+# }
+
 # module "events_queue" {
 #   source = "../../modules/sqs"
 
@@ -130,18 +146,15 @@ module "vpc" {
 #   tags               = var.tags
 # }
 
-# module "cognito" {
-#   source = "../../modules/cognito"
+# module "kms" {
+#   source = "../../modules/kms"
 
-#   user_pool_name               = "${var.project}-${var.environment}-users"
-#   username_attributes          = var.cognito_username_attributes
-#   client_names                 = var.cognito_client_names
-#   allowed_oauth_scopes         = var.cognito_allowed_oauth_scopes
-#   supported_identity_providers = var.cognito_supported_identity_providers
-#   generate_secret              = var.cognito_generate_secret
-#   callback_urls                = var.cognito_callback_urls
-#   logout_urls                  = var.cognito_logout_urls
-#   tags                         = var.tags
+#   key_name                = "${var.project}-${var.environment}-key"
+#   alias_name              = "alias/${var.project}-${var.environment}"
+#   description             = "KMS key for Solventa ${var.environment} secrets and data"
+#   deletion_window_in_days = var.kms_deletion_window_in_days
+#   enable_key_rotation     = var.kms_enable_key_rotation
+#   tags                    = var.tags
 # }
 
 # module "secrets_manager" {
@@ -152,17 +165,4 @@ module "vpc" {
 #   rotation_schedule_days = var.secrets_rotation_schedule_days
 #   rotation_lambda_arn    = var.secrets_rotation_lambda_arn
 #   tags                   = var.tags
-# }
-
-# module "api_gateway" {
-#   source = "../../modules/api_gateway"
-
-#   api_name                     = "${var.project}-${var.environment}-api"
-#   api_description              = "Solventa API Gateway for ${var.environment}"
-#   stage_name                   = var.api_stage_name
-#   integration_uri              = "http://${module.application_load_balancer.load_balancer_dns_name}"
-#   route_key                    = var.api_route_key
-#   access_log_retention_in_days = var.api_access_log_retention_in_days
-#   access_log_format            = var.api_access_log_format
-#   tags                         = var.tags
 # }
