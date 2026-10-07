@@ -266,7 +266,7 @@ variable "aurora_apply_immediately" {
   type        = bool
 }
 
-variable "assets_bucket_name" {
+variable "storage_bucket_name" {
   description = "Globally unique name of the development assets bucket."
   type        = string
 }

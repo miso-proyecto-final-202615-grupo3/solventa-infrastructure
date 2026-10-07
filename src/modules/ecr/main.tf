@@ -29,7 +29,7 @@ resource "aws_ecr_lifecycle_policy" "this" {
 
       selection = {
         tagStatus   = "tagged"
-        countType   = "number"
+        countType   = "sinceImagePushed"
         countNumber = var.keep_latest_images
       }
 

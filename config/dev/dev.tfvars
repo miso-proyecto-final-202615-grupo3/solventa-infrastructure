@@ -84,7 +84,7 @@ aurora_skip_final_snapshot          = true
 aurora_deletion_protection          = false
 aurora_apply_immediately            = false
 
-assets_bucket_name = "solventa-dev-storage-6fba06c21ab7"
+storage_bucket_name = "solventa-dev-storage-6fba06c21ab7"
 
 cognito_client_names                 = ["solventa-dev-web", "solventa-dev-mobile"]
 cognito_allowed_oauth_scopes         = ["openid", "email", "profile"]

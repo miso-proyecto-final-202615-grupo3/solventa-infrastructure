@@ -99,10 +99,10 @@ module "ecr" {
 #   tags                         = var.tags
 # }
 
-# module "assets_bucket" {
+# module "storage_bucket" {
 #   source = "../../modules/s3_bucket"
 
-#   bucket_name = var.assets_bucket_name
+#   bucket_name = var.storage_bucket_name
 #   kms_key_id  = module.kms.key_id
 #   tags        = var.tags
 # }

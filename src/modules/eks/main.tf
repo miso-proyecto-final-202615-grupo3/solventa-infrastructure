@@ -24,7 +24,7 @@ resource "aws_iam_role" "cluster" {
     Version = "2012-10-17"
     Statement = [{
       Effect    = "Allow"
-      Principal = { Type = "Service", Service = "eks.amazonaws.com" }
+      Principal = { Service = "eks.amazonaws.com" }
       Action    = "sts:AssumeRole"
     }]
   })
@@ -49,7 +49,7 @@ resource "aws_iam_role" "node" {
     Version = "2012-10-17"
     Statement = [{
       Effect    = "Allow"
-      Principal = { Type = "Service", Service = "ec2.amazonaws.com" }
+      Principal = { Service = "ec2.amazonaws.com" }
       Action    = "sts:AssumeRole"
     }]
   })
