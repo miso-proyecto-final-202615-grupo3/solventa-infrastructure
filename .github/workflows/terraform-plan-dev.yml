@@ -1,4 +1,4 @@
-name: "DEV Infra - Terraform Deploy"
+name: "DEV Infra - Terraform Plan"
 
 on:
   workflow_dispatch:
@@ -40,6 +40,3 @@ jobs:
 
       - name: Terraform Plan
         run: terraform -chdir=src/environments/dev plan -var-file="../../../config/dev/dev.tfvars"
-
-      - name: Terraform Apply
-        run: terraform -chdir=src/environments/dev apply -var-file="../../../config/dev/dev.tfvars" -auto-approve
