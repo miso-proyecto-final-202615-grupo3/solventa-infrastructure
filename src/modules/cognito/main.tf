@@ -1,20 +1,12 @@
 resource "aws_cognito_user_pool" "this" {
   name = var.user_pool_name
 
-  username_attributes = var.username_attributes
+  # phone_number, email, or preferred_username
+  username_attributes = ["email"]
 
-  schema {
-    name                = "email"
-    attribute_data_type = "String"
-    required            = true
-    mutable             = true
-  }
-
-  schema {
-    name                = "company_name"
-    attribute_data_type = "String"
-    required            = false
-    mutable             = true
+  sign_in_policy {
+    # PASSWORD, EMAIL_OTP, SMS_OTP, and WEB_AUTHN
+    allowed_first_auth_factors = ["PASSWORD"]
   }
 
   tags = merge(var.tags, { Name = var.user_pool_name })

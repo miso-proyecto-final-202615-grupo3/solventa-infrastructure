@@ -271,11 +271,6 @@ variable "api_access_log_format" {
   type        = string
 }
 
-variable "cognito_username_attributes" {
-  description = "Attributes users can sign in with."
-  type        = list(string)
-}
-
 variable "cognito_client_names" {
   description = "Names of Cognito application clients."
   type        = list(string)

@@ -71,14 +71,9 @@ aurora_apply_immediately            = false
 
 assets_bucket_name = "solventa-dev-assets-6f2c0a"
 
-cognito_username_attributes           = ["email"]
-cognito_self_sign_up_enabled          = true
-cognito_allow_unauthenticated_sign_up = false
-cognito_minimum_password_length       = 12
 cognito_client_names                  = ["solventa-dev-web", "solventa-dev-mobile"]
 cognito_allowed_oauth_scopes          = ["openid", "email", "profile"]
 cognito_supported_identity_providers  = []
-cognito_authorized_user_pool_routes   = ["/oauth2/token"]
 cognito_generate_secret               = true
 cognito_callback_urls                 = []
 cognito_logout_urls                   = []

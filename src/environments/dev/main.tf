@@ -99,8 +99,7 @@ module "vpc" {
 # module "cognito" {
 #   source = "../../modules/cognito"
 
-#   user_pool_name               = "${var.project}-${var.environment}-users"
-#   username_attributes          = var.cognito_username_attributes
+#   user_pool_name               = "${var.project}-${var.environment}-cognito-customers"
 #   client_names                 = var.cognito_client_names
 #   allowed_oauth_scopes         = var.cognito_allowed_oauth_scopes
 #   supported_identity_providers = var.cognito_supported_identity_providers
@@ -113,7 +112,7 @@ module "vpc" {
 # module "api_gateway" {
 #   source = "../../modules/api_gateway"
 
-#   api_name                     = "${var.project}-${var.environment}-api"
+#   api_name                     = "${var.project}-${var.environment}-apigw"
 #   api_description              = "Solventa API Gateway for ${var.environment}"
 #   stage_name                   = var.api_stage_name
 #   integration_uri              = "http://${module.application_load_balancer.load_balancer_dns_name}"
