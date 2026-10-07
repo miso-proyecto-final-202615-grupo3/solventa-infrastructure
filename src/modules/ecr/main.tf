@@ -24,15 +24,18 @@ resource "aws_ecr_lifecycle_policy" "this" {
 
   policy = jsonencode({
     rules = [{
+      rulePriority = 1
+      description  = "Keep the latest ${var.keep_latest_images} image tags"
+
+      selection = {
+        tagStatus   = "tagged"
+        countType   = "number"
+        countNumber = var.keep_latest_images
+      }
+
       action = {
         type = "expire"
       }
-      description = "Keep the latest ${var.keep_latest_images} image tags"
-      filter = {
-        tagStatus = "tagged"
-      }
-      count_type   = "number"
-      count_number = var.keep_latest_images
     }]
   })
 }
