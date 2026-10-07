@@ -52,13 +52,8 @@ eks_disk_size              = 40
 eks_ami_type               = "AL2023_x86_64_STANDARD"
 eks_labels = {
   Environment = "dev"
-  Workload    = "microservices"
+  Workload    = "solventa-backend"
 }
-
-assets_bucket_name = "solventa-dev-assets-6f2c0a"
-
-kms_deletion_window_in_days = 30
-kms_enable_key_rotation     = true
 
 aurora_engine_version               = "18.6"
 aurora_port                         = 5432
@@ -74,17 +69,7 @@ aurora_skip_final_snapshot          = true
 aurora_deletion_protection          = false
 aurora_apply_immediately            = false
 
-sqs_visibility_timeout_seconds = 300
-sqs_message_retention_seconds  = 1209600
-sqs_principal_services         = ["sns.amazonaws.com"]
-sns_endpoint_arns              = []
-
-sns_principal_services = ["sqs.amazonaws.com"]
-
-api_stage_name                   = "dev"
-api_route_key                    = "$default"
-api_access_log_retention_in_days = 30
-api_access_log_format            = "{\"requestId\":\"$context.requestId\",\"ip\":\"$context.identity.sourceIp\",\"requestTime\":\"$context.requestTime\",\"httpMethod\":\"$context.httpMethod\",\"routeKey\":\"$context.routeKey\",\"status\":$context.status,\"protocol\":\"$context.protocol\",\"responseLength\":$context.responseLength}"
+assets_bucket_name = "solventa-dev-assets-6f2c0a"
 
 cognito_username_attributes           = ["email"]
 cognito_self_sign_up_enabled          = true
@@ -97,6 +82,23 @@ cognito_authorized_user_pool_routes   = ["/oauth2/token"]
 cognito_generate_secret               = true
 cognito_callback_urls                 = []
 cognito_logout_urls                   = []
+
+api_stage_name                   = "dev"
+api_route_key                    = "$default"
+api_access_log_retention_in_days = 30
+api_access_log_format            = "{\"requestId\":\"$context.requestId\",\"ip\":\"$context.identity.sourceIp\",\"requestTime\":\"$context.requestTime\",\"httpMethod\":\"$context.httpMethod\",\"routeKey\":\"$context.routeKey\",\"status\":$context.status,\"protocol\":\"$context.protocol\",\"responseLength\":$context.responseLength}"
+
+sqs_visibility_timeout_seconds = 300
+sqs_message_retention_seconds  = 1209600
+sqs_principal_services         = ["sns.amazonaws.com"]
+sqs_redrive_policy             = ""
+
+sns_principal_services = ["sqs.amazonaws.com"]
+sns_endpoint_arns      = []
+sns_protocols          = []
+
+kms_deletion_window_in_days = 30
+kms_enable_key_rotation     = true
 
 secrets_rotation_schedule_days = 0
 secrets_rotation_lambda_arn    = ""

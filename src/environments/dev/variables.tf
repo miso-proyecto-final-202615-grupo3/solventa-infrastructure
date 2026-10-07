@@ -158,21 +158,6 @@ variable "eks_labels" {
   type        = map(string)
 }
 
-variable "assets_bucket_name" {
-  description = "Globally unique name of the development assets bucket."
-  type        = string
-}
-
-variable "kms_deletion_window_in_days" {
-  description = "Waiting period before KMS key deletion."
-  type        = number
-}
-
-variable "kms_enable_key_rotation" {
-  description = "Enables automatic KMS key rotation."
-  type        = bool
-}
-
 variable "aurora_engine_version" {
   description = "Aurora PostgreSQL engine version."
   type        = string
@@ -256,39 +241,14 @@ variable "aurora_apply_immediately" {
   type        = bool
 }
 
-variable "sqs_visibility_timeout_seconds" {
-  description = "Visibility timeout for messages in the events queue."
-  type        = number
-}
-
-variable "sqs_message_retention_seconds" {
-  description = "Retention period for messages in the events queue."
-  type        = number
-}
-
-variable "sqs_redrive_policy" {
-  description = "Optional JSON policy used for dead-letter queue routing."
+variable "assets_bucket_name" {
+  description = "Globally unique name of the development assets bucket."
   type        = string
 }
 
-variable "sqs_principal_services" {
-  description = "AWS services allowed to publish to the events queue."
-  type        = list(string)
-}
-
-variable "sns_endpoint_arns" {
-  description = "Endpoint ARNs subscribed to the notifications topic."
-  type        = list(string)
-}
-
-variable "sns_protocols" {
-  description = "Protocols matching the notification endpoints."
-  type        = list(string)
-}
-
-variable "sns_principal_services" {
-  description = "AWS services allowed to publish to the notifications topic."
-  type        = list(string)
+variable "kms_deletion_window_in_days" {
+  description = "Waiting period before KMS key deletion."
+  type        = number
 }
 
 variable "api_stage_name" {
@@ -344,6 +304,46 @@ variable "cognito_callback_urls" {
 variable "cognito_logout_urls" {
   description = "Logout URLs for Cognito application clients."
   type        = list(string)
+}
+
+variable "sqs_visibility_timeout_seconds" {
+  description = "Visibility timeout for messages in the events queue."
+  type        = number
+}
+
+variable "sqs_message_retention_seconds" {
+  description = "Retention period for messages in the events queue."
+  type        = number
+}
+
+variable "sqs_redrive_policy" {
+  description = "Optional JSON policy used for dead-letter queue routing."
+  type        = string
+}
+
+variable "sqs_principal_services" {
+  description = "AWS services allowed to publish to the events queue."
+  type        = list(string)
+}
+
+variable "sns_endpoint_arns" {
+  description = "Endpoint ARNs subscribed to the notifications topic."
+  type        = list(string)
+}
+
+variable "sns_protocols" {
+  description = "Protocols matching the notification endpoints."
+  type        = list(string)
+}
+
+variable "sns_principal_services" {
+  description = "AWS services allowed to publish to the notifications topic."
+  type        = list(string)
+}
+
+variable "kms_enable_key_rotation" {
+  description = "Enables automatic KMS key rotation."
+  type        = bool
 }
 
 variable "secrets_rotation_schedule_days" {
