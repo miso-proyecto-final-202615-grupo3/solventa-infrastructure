@@ -57,5 +57,6 @@ jobs:
           TF_VAR_eks_cluster_admin_principal_arns: ${{ secrets.EKS_CLUSTER_ADMIN_PRINCIPAL_ARNS }}
         run: |
           terraform -chdir=src/environments/dev apply \
+            -var-file="../../../config/dev/dev.tfvars" \
             -input=false \
             -auto-approve
