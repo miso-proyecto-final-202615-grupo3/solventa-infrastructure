@@ -23,10 +23,10 @@ output "private_database_subnet_ids" {
   value       = module.vpc.private_database_subnet_ids
 }
 
-# output "load_balancer_arn" {
-#   description = "ARN of the application load balancer."
-#   value       = module.application_load_balancer.load_balancer_arn
-# }
+output "load_balancer_arn" {
+  description = "ARN of the application load balancer."
+  value       = module.application_load_balancer.load_balancer_arn
+}
 
 # output "eks_cluster_id" {
 #   description = "ID of the development EKS cluster."

@@ -48,7 +48,7 @@ variable "alb_target_protocol" {
   type        = string
 }
 
-variable "certificate_arn" {
+variable "alb_certificate_arn" {
   description = "Optional ACM certificate ARN used by the HTTPS listener."
   type        = string
 }
@@ -156,6 +156,31 @@ variable "eks_ami_type" {
 variable "eks_labels" {
   description = "Labels applied to EKS worker nodes."
   type        = map(string)
+}
+
+variable "ecr_repository_names" {
+  description = "Names of the ECR repositories for application images."
+  type        = list(string)
+}
+
+variable "ecr_image_tag_mutability" {
+  description = "Image tag mutability policy for the ECR repositories."
+  type        = string
+}
+
+variable "ecr_scan_on_push" {
+  description = "Enables vulnerability scanning when images are pushed."
+  type        = bool
+}
+
+variable "ecr_encryption_type" {
+  description = "Encryption type used by the ECR repository."
+  type        = string
+}
+
+variable "ecr_keep_latest_images" {
+  description = "Number of latest tagged images retained by the lifecycle policy."
+  type        = number
 }
 
 variable "aurora_engine_version" {
