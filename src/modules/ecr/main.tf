@@ -23,19 +23,22 @@ resource "aws_ecr_lifecycle_policy" "this" {
   repository = each.value.name
 
   policy = jsonencode({
-    rules = [{
-      rulePriority = 1
-      description  = "Keep the latest ${var.keep_latest_images} image tags"
+    rules = [
+      {
+        rulePriority = 1
+        description  = "Keep the latest ${var.keep_latest_images} image tags"
 
-      selection = {
-        tagStatus   = "tagged"
-        countType   = "sinceImagePushed"
-        countNumber = var.keep_latest_images
-      }
+        selection = {
+          tagStatus   = "untagged"
+          countType   = "sinceImagePushed"
+          countUnit   = "days"
+          countNumber = var.keep_latest_images
+        }
 
-      action = {
-        type = "expire"
+        action = {
+          type = "expire"
+        }
       }
-    }]
+    ]
   })
 }

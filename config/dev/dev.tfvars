@@ -68,7 +68,7 @@ ecr_repository_names = [
 ecr_image_tag_mutability = "MUTABLE"
 ecr_scan_on_push         = true
 ecr_encryption_type      = "AES256"
-ecr_keep_latest_images   = 10
+ecr_keep_latest_images   = 14
 
 aurora_engine_version               = "18.6"
 aurora_port                         = 5432
