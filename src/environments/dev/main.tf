@@ -15,26 +15,26 @@ module "vpc" {
   tags                          = var.tags
 }
 
-module "application_load_balancer" {
-  source = "../../modules/alb"
+# module "application_load_balancer" {
+#   source = "../../modules/alb"
 
-  load_balancer_name               = "${var.project}-${var.environment}-alb"
-  target_group_name                = "${var.project}-${var.environment}-tg"
-  vpc_id                           = module.vpc.vpc_id
-  subnet_ids                       = module.vpc.public_subnet_ids
-  target_port                      = var.alb_target_port
-  target_protocol                  = var.alb_target_protocol
-  certificate_arn                  = var.alb_certificate_arn
-  ssl_policy                       = var.alb_ssl_policy
-  idle_timeout                     = var.alb_idle_timeout
-  deletion_protection              = var.alb_deletion_protection
-  health_check_healthy_threshold   = var.alb_health_check_healthy_threshold
-  health_check_interval            = var.alb_health_check_interval
-  health_check_path                = var.alb_health_check_path
-  health_check_timeout             = var.alb_health_check_timeout
-  health_check_unhealthy_threshold = var.alb_health_check_unhealthy_threshold
-  tags                             = var.tags
-}
+#   load_balancer_name               = "${var.project}-${var.environment}-alb"
+#   target_group_name                = "${var.project}-${var.environment}-tg"
+#   vpc_id                           = module.vpc.vpc_id
+#   subnet_ids                       = module.vpc.public_subnet_ids
+#   target_port                      = var.alb_target_port
+#   target_protocol                  = var.alb_target_protocol
+#   certificate_arn                  = var.alb_certificate_arn
+#   ssl_policy                       = var.alb_ssl_policy
+#   idle_timeout                     = var.alb_idle_timeout
+#   deletion_protection              = var.alb_deletion_protection
+#   health_check_healthy_threshold   = var.alb_health_check_healthy_threshold
+#   health_check_interval            = var.alb_health_check_interval
+#   health_check_path                = var.alb_health_check_path
+#   health_check_timeout             = var.alb_health_check_timeout
+#   health_check_unhealthy_threshold = var.alb_health_check_unhealthy_threshold
+#   tags                             = var.tags
+# }
 
 # module "eks" {
 #   source = "../../modules/eks"
