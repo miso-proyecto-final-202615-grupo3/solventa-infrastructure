@@ -77,6 +77,7 @@ aurora_apply_immediately            = false
 sqs_visibility_timeout_seconds = 300
 sqs_message_retention_seconds  = 1209600
 sqs_principal_services         = ["sns.amazonaws.com"]
+sns_endpoint_arns              = []
 
 sns_principal_services = ["sqs.amazonaws.com"]
 
