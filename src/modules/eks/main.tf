@@ -76,6 +76,62 @@ resource "aws_iam_role_policy_attachment" "node_ecr" {
   policy_arn = "arn:aws:iam::aws:policy/AmazonEC2ContainerRegistryReadOnly"
 }
 
+resource "aws_iam_role" "load_balancer_controller" {
+  name = "${var.cluster_name}-aws-lbc"
+
+  assume_role_policy = jsonencode({
+    Version = "2012-10-17"
+    Statement = [{
+      Effect = "Allow"
+      Principal = {
+        Service = "eks.amazonaws.com"
+      }
+      Action = "sts:AssumeRole"
+      Condition = {
+        StringEquals = {
+          "eks.amazonaws.com:aud" = "sts.amazonaws.com"
+          "eks.amazonaws.com:sub" = "system:serviceaccount:kube-system:aws-load-balancer-controller"
+        }
+      }
+    }]
+  })
+
+  tags = var.tags
+}
+
+resource "aws_iam_role_policy_attachment" "load_balancer_controller" {
+  role       = aws_iam_role.load_balancer_controller.name
+  policy_arn = "arn:aws:iam::aws:policy/service-role/AWSLoadBalancerControllerIAMPolicy"
+}
+
+resource "aws_iam_role" "secrets_store_csi_driver" {
+  name = "${var.cluster_name}-secrets-store-csi"
+
+  assume_role_policy = jsonencode({
+    Version = "2012-10-17"
+    Statement = [{
+      Effect = "Allow"
+      Principal = {
+        Service = "eks.amazonaws.com"
+      }
+      Action = "sts:AssumeRole"
+      Condition = {
+        StringEquals = {
+          "eks.amazonaws.com:aud" = "sts.amazonaws.com"
+          "eks.amazonaws.com:sub" = "system:serviceaccount:kube-system:secrets-store-csi-driver"
+        }
+      }
+    }]
+  })
+
+  tags = var.tags
+}
+
+resource "aws_iam_role_policy_attachment" "secrets_store_csi_driver" {
+  role       = aws_iam_role.secrets_store_csi_driver.name
+  policy_arn = "arn:aws:iam::aws:policy/AmazonEKSSecretsStoreCSIControllerPolicy"
+}
+
 resource "aws_security_group" "nodes" {
   name        = "${var.cluster_name}-nodes"
   description = "Security group for EKS worker nodes"

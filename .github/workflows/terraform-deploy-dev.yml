@@ -11,6 +11,8 @@ jobs:
   terraform-deploy-dev:
     runs-on: ubuntu-latest
     environment: dev
+    timeout-minutes: 30
+
     steps:
       - name: Checkout code
         uses: actions/checkout@v4

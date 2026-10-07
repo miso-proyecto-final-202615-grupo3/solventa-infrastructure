@@ -1,0 +1,193 @@
+name: "DEV EKS Cluster - Setup"
+
+on:
+  workflow_dispatch:
+    inputs:
+      cluster_name:
+        description: Name of the existing EKS cluster.
+        required: true
+        default: solventa-dev-eks
+      public_endpoint_cidrs:
+        description: CIDR blocks allowed to access the public EKS management endpoint.
+        required: true
+        default: 0.0.0.0/0
+
+permissions:
+  contents: read
+  id-token: write
+
+concurrency:
+  group: eks-setup-dev-${{ github.run_id }}
+  cancel-in-progress: false
+
+env:
+  AWS_REGION: ${{ secrets.AWS_REGION }}
+  CLUSTER_NAME: ${{ github.event.inputs.cluster_name }}
+  PUBLIC_ENDPOINT_CIDRS: ${{ github.event.inputs.public_endpoint_cidrs }}
+  LBC_ROLE_NAME: ${{ github.event.inputs.cluster_name }}-aws-lbc
+  SECRETS_CSI_ROLE_NAME: ${{ github.event.inputs.cluster_name }}-secrets-store-csi
+
+jobs:
+  eks-setup-dev:
+    runs-on: ubuntu-latest
+    environment: dev
+    timeout-minutes: 30
+
+    steps:
+      - name: Check out repository
+        uses: actions/checkout@v4
+
+      - name: Configure AWS credentials with GitHub OIDC
+        uses: aws-actions/configure-aws-credentials@v4
+        with:
+          role-to-assume: ${{ secrets.AWS_ROLE_ARN }}
+          aws-region: ${{ secrets.AWS_REGION }}
+
+      - name: Install kubectl
+        uses: azure/setup-kubectl@v4
+        with:
+          version: latest
+
+      - name: Install Helm
+        uses: azure/setup-helm@v3
+        with:
+          version: v5.0.1
+
+      - name: Verify AWS identity and EKS cluster
+        shell: bash
+        run: |
+          set -euo pipefail
+          aws sts get-caller-identity
+          aws eks describe-cluster \
+            --name "$CLUSTER_NAME" \
+            --query 'cluster.{name:name,region:region,status:status,endpoint:endpoint}' \
+            --output table
+
+      - name: Install AWS Pod Identity Add-on
+        shell: bash
+        run: |
+          set -euo pipefail
+          aws eks create-addon \
+            --cluster-name "$CLUSTER_NAME" \
+            --addon-name eks-pod-identity-agent \
+            --resolve-conflicts OVERWRITE
+          aws eks wait addon-active \
+            --cluster-name "$CLUSTER_NAME" \
+            --addon-name eks-pod-identity-agent
+
+      - name: Configure AWS Load Balancer Controller Pod Identity
+        shell: bash
+        run: |
+          set -euo pipefail
+          if ! aws iam get-role --role-name "$LBC_ROLE_NAME" >/dev/null 2>&1; then
+            echo "Required IAM role $LBC_ROLE_NAME does not exist. Apply the Terraform module first." >&2
+            exit 1
+          fi
+
+          LBC_ROLE_ARN="$(aws iam get-role \
+            --role-name "$LBC_ROLE_NAME" \
+            --query 'Role.Arn' \
+            --output text)"
+
+          if ! aws eks describe-pod-identity-association \
+            --cluster-name "$CLUSTER_NAME" \
+            --namespace kube-system \
+            --service-account-name aws-load-balancer-controller \
+            --query 'podIdentityAssociation.serviceAccount.name' \
+            --output text 2>/dev/null; then
+            aws eks create-pod-identity-association \
+              --cluster-name "$CLUSTER_NAME" \
+              --namespace kube-system \
+              --service-account-name aws-load-balancer-controller \
+              --role-arn "$LBC_ROLE_ARN"
+          fi
+
+      - name: Configure Secrets Store CSI Driver Pod Identity
+        shell: bash
+        run: |
+          set -euo pipefail
+          if ! aws iam get-role --role-name "$SECRETS_CSI_ROLE_NAME" >/dev/null 2>&1; then
+            echo "Required IAM role $SECRETS_CSI_ROLE_NAME does not exist. Apply the Terraform module first." >&2
+            exit 1
+          fi
+
+          SECRETS_CSI_ROLE_ARN="$(aws iam get-role \
+            --role-name "$SECRETS_CSI_ROLE_NAME" \
+            --query 'Role.Arn' \
+            --output text)"
+
+          if ! aws eks describe-pod-identity-association \
+            --cluster-name "$CLUSTER_NAME" \
+            --namespace kube-system \
+            --service-account-name secrets-store-csi-driver \
+            --query 'podIdentityAssociation.serviceAccount.name' \
+            --output text 2>/dev/null; then
+            aws eks create-pod-identity-association \
+              --cluster-name "$CLUSTER_NAME" \
+              --namespace kube-system \
+              --service-account-name secrets-store-csi-driver \
+              --role-arn "$SECRETS_CSI_ROLE_ARN"
+          fi
+
+      - name: Install AWS Load Balancer Controller with Helm
+        shell: bash
+        run: |
+          set -euo pipefail
+
+          helm repo add eks https://aws.github.io/eks-charts
+          helm repo update
+
+          helm upgrade --install aws-load-balancer-controller eks/aws-load-balancer-controller \
+            --namespace kube-system \
+            --create-namespace \
+            --set clusterName="$CLUSTER_NAME" \
+            --set enablePodIdentity=true \
+            --set serviceAccount.create=true \
+            --set serviceAccount.name=aws-load-balancer-controller \
+            --wait \
+            --timeout 10m
+
+      - name: Install AWS Secrets Store CSI Driver Add-on
+        shell: bash
+        run: |
+          set -euo pipefail
+          aws eks create-addon \
+            --cluster-name "$CLUSTER_NAME" \
+            --addon-name aws-secrets-store-csi-driver \
+            --resolve-conflicts OVERWRITE
+          aws eks wait addon-active \
+            --cluster-name "$CLUSTER_NAME" \
+            --addon-name aws-secrets-store-csi-driver
+
+      - name: Verify installed components
+        shell: bash
+        run: |
+          set -euo pipefail
+          kubectl get pods -A -l app.kubernetes.io/name=aws-load-balancer-controller \
+            --output wide
+          kubectl get pods -A -l app=eks-pod-identity-agent \
+            --output wide
+          kubectl get pods -A -l app=secrets-store-csi-driver \
+            --output wide
+          aws eks describe-pod-identity-association \
+            --cluster-name "$CLUSTER_NAME" \
+            --namespace kube-system \
+            --service-account-name aws-load-balancer-controller \
+            --query 'podIdentityAssociation.{roleArn:roleArn,serviceAccount:serviceAccount}' \
+            --output table
+          aws eks describe-pod-identity-association \
+            --cluster-name "$CLUSTER_NAME" \
+            --namespace kube-system \
+            --service-account-name secrets-store-csi-driver \
+            --query 'podIdentityAssociation.{roleArn:roleArn,serviceAccount:serviceAccount}' \
+            --output table
+          aws eks describe-addon \
+            --cluster-name "$CLUSTER_NAME" \
+            --addon-name eks-pod-identity-agent \
+            --query 'addon.{name:name,status:status,version:version}' \
+            --output table
+          aws eks describe-addon \
+            --cluster-name "$CLUSTER_NAME" \
+            --addon-name aws-secrets-store-csi-driver \
+            --query 'addon.{name:name,status:status,version:version}' \
+            --output table
