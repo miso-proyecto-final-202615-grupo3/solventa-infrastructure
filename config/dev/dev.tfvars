@@ -76,13 +76,16 @@ aurora_preferred_backup_window      = "03:00-04:00"
 aurora_backup_retention_period      = 7
 aurora_preferred_maintenance_window = "sun:04:00-sun:05:00"
 aurora_storage_encrypted            = true
-aurora_parameter_group_name         = "solventa-dev-aurora"
 aurora_parameter_group_family       = "aurora-postgresql-18.6"
 aurora_instance_count               = 1
-aurora_instance_class               = "db.t3.small"
+aurora_instance_class               = "db.serverless"
 aurora_skip_final_snapshot          = true
 aurora_deletion_protection          = false
 aurora_apply_immediately            = false
+
+aurora_serverlessv2_max_capacity             = 1.0
+aurora_serverlessv2_min_capacity             = 0.0
+aurora_serverlessv2_seconds_until_auto_pause = 3600
 
 storage_bucket_name = "solventa-dev-storage-6fba06c21ab7"
 

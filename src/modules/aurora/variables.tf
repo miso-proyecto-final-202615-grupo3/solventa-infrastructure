@@ -41,10 +41,6 @@ variable "storage_encrypted" {
   type = bool
 }
 
-variable "kms_key_id" {
-  type = string
-}
-
 variable "parameter_group_name" {
   type = string
 }
@@ -87,6 +83,14 @@ variable "deletion_protection" {
 
 variable "apply_immediately" {
   type = bool
+}
+
+variable "serverlessv2_scaling_configuration" {
+  type = object({
+    max_capacity             = number
+    min_capacity             = number
+    seconds_until_auto_pause = number
+  })
 }
 
 variable "tags" {

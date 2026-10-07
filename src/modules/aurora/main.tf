@@ -34,14 +34,18 @@ resource "aws_rds_cluster" "this" {
   backup_retention_period         = var.backup_retention_period
   preferred_maintenance_window    = var.preferred_maintenance_window
   storage_encrypted               = var.storage_encrypted
-  kms_key_id                      = var.kms_key_id
   db_cluster_parameter_group_name = aws_rds_cluster_parameter_group.this.name
   vpc_security_group_ids          = [aws_security_group.this.id]
   db_subnet_group_name            = aws_db_subnet_group.this.name
   skip_final_snapshot             = var.skip_final_snapshot
   deletion_protection             = var.deletion_protection
   apply_immediately               = var.apply_immediately
-  tags                            = merge(var.tags, { Name = var.cluster_identifier })
+  serverlessv2_scaling_configuration {
+    max_capacity             = var.serverlessv2_scaling_configuration.max_capacity
+    min_capacity             = var.serverlessv2_scaling_configuration.min_capacity
+    seconds_until_auto_pause = var.serverlessv2_scaling_configuration.seconds_until_auto_pause
+  }
+  tags = merge(var.tags, { Name = var.cluster_identifier })
 }
 
 resource "aws_rds_cluster_instance" "this" {

@@ -30,6 +30,10 @@ variable "cluster_log_types" {
   type = list(string)
 }
 
+variable "cluster_admin_principal_arns" {
+  type = list(string)
+}
+
 variable "node_group_name" {
   type = string
 }

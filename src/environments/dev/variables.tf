@@ -113,6 +113,11 @@ variable "eks_cluster_log_types" {
   type        = list(string)
 }
 
+variable "eks_cluster_admin_principal_arns" {
+  description = "IAM principal ARNs granted the EKS cluster admin role."
+  type        = list(string)
+}
+
 variable "eks_instance_types" {
   description = "Instance types used by the EKS node group."
   type        = list(string)
@@ -231,11 +236,6 @@ variable "aurora_storage_encrypted" {
   type        = bool
 }
 
-variable "aurora_parameter_group_name" {
-  description = "Parameter group name used by Aurora."
-  type        = string
-}
-
 variable "aurora_parameter_group_family" {
   description = "Family of the Aurora parameter group."
   type        = string
@@ -264,6 +264,21 @@ variable "aurora_deletion_protection" {
 variable "aurora_apply_immediately" {
   description = "Applies Aurora changes immediately instead of waiting for maintenance."
   type        = bool
+}
+
+variable "aurora_serverlessv2_max_capacity" {
+  description = "Maximum capacity for Aurora Serverless v2."
+  type        = number
+}
+
+variable "aurora_serverlessv2_min_capacity" {
+  description = "Minimum capacity for Aurora Serverless v2."
+  type        = number
+}
+
+variable "aurora_serverlessv2_seconds_until_auto_pause" {
+  description = "Time in seconds before Aurora Serverless v2 pauses."
+  type        = number
 }
 
 variable "storage_bucket_name" {

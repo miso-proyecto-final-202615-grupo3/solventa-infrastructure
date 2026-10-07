@@ -125,3 +125,21 @@ resource "aws_eks_node_group" "this" {
 
   depends_on = [aws_iam_role.node]
 }
+
+resource "aws_eks_access_entry" "cluster_admin_access_entry" {
+  for_each      = toset(var.cluster_admin_principal_arns)
+  cluster_name  = aws_eks_cluster.this.name
+  principal_arn = each.value
+  type          = "STANDARD"
+}
+
+resource "aws_eks_access_policy_association" "cluster_admin_policy_assoc" {
+  for_each      = aws_eks_access_entry.cluster_admin_access_entry
+  cluster_name  = aws_eks_cluster.this.name
+  policy_arn    = "arn:aws:iam::aws:policy/AmazonEKSClusterAdminPolicy"
+  principal_arn = each.value.principal_arn
+
+  access_scope {
+    type = "cluster"
+  }
+}
