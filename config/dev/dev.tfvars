@@ -28,6 +28,7 @@ availability_zones = ["us-east-1a", "us-east-1b", "us-east-1c"]
 
 alb_target_port                      = 8080
 alb_target_protocol                  = "HTTP"
+certificate_arn                      = ""
 alb_ssl_policy                       = "ELBSecurityPolicy-TLS-1-2-2017-01"
 alb_idle_timeout                     = 60
 alb_deletion_protection              = false
