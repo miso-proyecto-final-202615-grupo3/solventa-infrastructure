@@ -39,7 +39,18 @@ jobs:
         run: terraform -chdir=src/environments/dev validate
 
       - name: Terraform Plan
-        run: terraform -chdir=src/environments/dev plan -var-file="../../../config/dev/dev.tfvars"
+        run: |
+          terraform -chdir=src/environments/dev plan \
+            -var-file="../../../config/dev/dev.tfvars" \
+            -var="aurora_database_name=${{ secrets.AURORA_DATABASE_NAME }}" \
+            -var="aurora_master_username=${{ secrets.AURORA_MASTER_USERNAME }}" \
+            -var="aurora_master_password=${{ secrets.AURORA_MASTER_PASSWORD }}"
 
       - name: Terraform Apply
-        run: terraform -chdir=src/environments/dev apply -var-file="../../../config/dev/dev.tfvars" -auto-approve
+        run: |
+          terraform -chdir=src/environments/dev apply \
+            -var-file="../../../config/dev/dev.tfvars" \
+            var="aurora_database_name=${{ secrets.AURORA_DATABASE_NAME }}" \
+            -var="aurora_master_username=${{ secrets.AURORA_MASTER_USERNAME }}" \
+            -var="aurora_master_password=${{ secrets.AURORA_MASTER_PASSWORD }}" \
+            -auto-approve
