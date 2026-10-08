@@ -48,11 +48,6 @@ resource "aws_iam_role_policy_attachment" "cluster" {
   policy_arn = "arn:aws:iam::aws:policy/EKSClusterPolicy"
 }
 
-resource "aws_iam_role_policy_attachment" "cluster_service" {
-  role       = aws_iam_role.cluster.name
-  policy_arn = "arn:aws:iam::aws:policy/EKSServicePolicy"
-}
-
 resource "aws_iam_role" "node" {
   name = "${var.cluster_name}-node-role"
 
@@ -93,9 +88,12 @@ resource "aws_iam_role" "load_balancer_controller" {
     Statement = [{
       Effect = "Allow"
       Principal = {
-        Service = "eks.amazonaws.com"
+        Service = "pods.eks.amazonaws.com"
       }
-      Action = "sts:AssumeRole"
+      Action = [
+        "sts:AssumeRole",
+        "sts:TagSession"
+      ]
       Condition = {
         StringEquals = {
           "eks.amazonaws.com:aud" = "sts.amazonaws.com"
@@ -121,9 +119,12 @@ resource "aws_iam_role" "secrets_store_csi_driver" {
     Statement = [{
       Effect = "Allow"
       Principal = {
-        Service = "eks.amazonaws.com"
+        Service = "pods.eks.amazonaws.com"
       }
-      Action = "sts:AssumeRole"
+      Action = [
+        "sts:AssumeRole",
+        "sts:TagSession"
+      ]
       Condition = {
         StringEquals = {
           "eks.amazonaws.com:aud" = "sts.amazonaws.com"
@@ -201,9 +202,9 @@ resource "aws_eks_access_entry" "cluster_admin_access_entry" {
 }
 
 resource "aws_eks_access_policy_association" "cluster_admin_policy_assoc" {
-  for_each      = aws_eks_access_entry.cluster_admin_access_entry
-  cluster_name  = aws_eks_cluster.this.name
-  policy_arn    = "arn:aws:iam::aws:policy/AmazonEKSClusterAdminPolicy"
+  for_each     = aws_eks_access_entry.cluster_admin_access_entry
+  cluster_name = aws_eks_cluster.this.name
+  policy_arn   = "arn:aws:eks::aws:cluster-access-policy/AmazonEKSClusterAdminPolicy"
   principal_arn = each.value.principal_arn
 
   access_scope {
