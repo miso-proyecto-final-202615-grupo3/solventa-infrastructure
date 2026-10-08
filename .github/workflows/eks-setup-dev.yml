@@ -96,12 +96,14 @@ jobs:
             --query 'Role.Arn' \
             --output text)"
 
-          if ! aws eks describe-pod-identity-association \
+          ASSOC_EXISTS=$(aws eks list-pod-identity-associations \
             --cluster-name "$CLUSTER_NAME" \
             --namespace kube-system \
             --service-account aws-load-balancer-controller \
-            --query 'podIdentityAssociation.serviceAccount.name' \
-            --output text 2>/dev/null; then
+            --query 'associations[0].associationArn' \
+            --output text 2>/dev/null || echo "None")
+
+          if [ "$ASSOC_EXISTS" = "None" ] || [ -z "$ASSOC_EXISTS" ]; then
             aws eks create-pod-identity-association \
               --cluster-name "$CLUSTER_NAME" \
               --namespace kube-system \
@@ -123,12 +125,14 @@ jobs:
             --query 'Role.Arn' \
             --output text)"
 
-          if ! aws eks describe-pod-identity-association \
+          ASSOC_EXISTS=$(aws eks list-pod-identity-associations \
             --cluster-name "$CLUSTER_NAME" \
             --namespace kube-system \
             --service-account secrets-store-csi-driver \
-            --query 'podIdentityAssociation.serviceAccount.name' \
-            --output text 2>/dev/null; then
+            --query 'associations[0].associationArn' \
+            --output text 2>/dev/null || echo "None")
+
+          if [ "$ASSOC_EXISTS" = "None" ] || [ -z "$ASSOC_EXISTS" ]; then
             aws eks create-pod-identity-association \
               --cluster-name "$CLUSTER_NAME" \
               --namespace kube-system \
