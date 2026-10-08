@@ -47,18 +47,21 @@ module "application_load_balancer" {
 #   enable_public_endpoint = var.eks_enable_public_endpoint
 #   public_endpoint_cidrs  = var.eks_public_endpoint_cidrs
 #   cluster_log_types      = var.eks_cluster_log_types
-#   cluster_admin_principal_arns = var.eks_cluster_admin_principal_arns
-#   node_group_name        = "${var.project}-${var.environment}-workers"
-#   instance_types         = var.eks_instance_types
-#   desired_size           = var.eks_desired_size
-#   min_size               = var.eks_min_size
-#   max_size               = var.eks_max_size
-#   max_unavailable        = var.eks_max_unavailable
-#   capacity_type          = var.eks_capacity_type
-#   disk_size              = var.eks_disk_size
-#   ami_type               = var.eks_ami_type
-#   labels                 = var.eks_labels
-#   tags                   = var.tags
+#   cluster_admin_principal_arns = [
+#     var.eks_cluster_admin_principal_pipeline,
+#     var.eks_cluster_admin_principal_group
+#   ]
+#   node_group_name = "${var.project}-${var.environment}-workers"
+#   instance_types  = var.eks_instance_types
+#   desired_size    = var.eks_desired_size
+#   min_size        = var.eks_min_size
+#   max_size        = var.eks_max_size
+#   max_unavailable = var.eks_max_unavailable
+#   capacity_type   = var.eks_capacity_type
+#   disk_size       = var.eks_disk_size
+#   ami_type        = var.eks_ami_type
+#   labels          = var.eks_labels
+#   tags            = var.tags
 # }
 
 module "ecr" {

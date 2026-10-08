@@ -45,7 +45,8 @@ jobs:
           TF_VAR_aurora_database_name: ${{ secrets.AURORA_DATABASE_NAME }}
           TF_VAR_aurora_master_username: ${{ secrets.AURORA_MASTER_USERNAME }}
           TF_VAR_aurora_master_password: ${{ secrets.AURORA_MASTER_PASSWORD }}
-          TF_VAR_eks_cluster_admin_principal_arns: ${{ secrets.EKS_CLUSTER_ADMIN_PRINCIPAL_ARNS }}
+          TF_VAR_eks_cluster_admin_principal_pipeline: ${{ secrets.AWS_ROLE_IAM }}
+          TF_VAR_eks_cluster_admin_principal_group: ${{ secrets.EKS_CLUSTER_ADMIN_PRINCIPAL_GROUP }}
         run: |
           terraform -chdir=src/environments/dev plan \
             -var-file="../../../config/dev/dev.tfvars" \

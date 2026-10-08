@@ -113,9 +113,14 @@ variable "eks_cluster_log_types" {
   type        = list(string)
 }
 
-variable "eks_cluster_admin_principal_arns" {
-  description = "IAM principal ARNs granted the EKS cluster admin role."
-  type        = list(string)
+variable "eks_cluster_admin_principal_pipeline" {
+  description = "IAM principal ARN granted the EKS cluster admin permissions."
+  type        = string
+}
+
+variable "eks_cluster_admin_principal_group" {
+  description = "IAM principal ARN granted the EKS cluster admin permissions."
+  type        = string
 }
 
 variable "eks_instance_types" {
