@@ -46,7 +46,8 @@ resource "aws_iam_role" "cluster" {
 
 resource "aws_iam_role_policy_attachment" "cluster" {
   role       = aws_iam_role.cluster.name
-  policy_arn = "arn:aws:iam::aws:policy/EKSClusterPolicy"
+  policy_arn = "arn:aws:iam::aws:policy/AmazonEKSClusterPolicy"
+  policy_arn = "arn:aws:iam::aws:policy/AmazonEKSClusterPolicy"
 }
 
 resource "aws_iam_role" "node" {
@@ -79,68 +80,6 @@ resource "aws_iam_role_policy_attachment" "node_cni" {
 resource "aws_iam_role_policy_attachment" "node_ecr" {
   role       = aws_iam_role.node.name
   policy_arn = "arn:aws:iam::aws:policy/AmazonEC2ContainerRegistryReadOnly"
-}
-
-resource "aws_iam_role" "load_balancer_controller" {
-  name = "${var.cluster_name}-aws-lbc"
-
-  assume_role_policy = jsonencode({
-    Version = "2012-10-17"
-    Statement = [{
-      Effect = "Allow"
-      Principal = {
-        Service = "pods.eks.amazonaws.com"
-      }
-      Action = [
-        "sts:AssumeRole",
-        "sts:TagSession"
-      ]
-      Condition = {
-        StringEquals = {
-          "eks.amazonaws.com:aud" = "sts.amazonaws.com"
-          "eks.amazonaws.com:sub" = "system:serviceaccount:kube-system:aws-load-balancer-controller"
-        }
-      }
-    }]
-  })
-
-  tags = var.tags
-}
-
-resource "aws_iam_role_policy_attachment" "load_balancer_controller" {
-  role       = aws_iam_role.load_balancer_controller.name
-  policy_arn = "arn:aws:iam::aws:policy/service-role/AWSLoadBalancerControllerIAMPolicy"
-}
-
-resource "aws_iam_role" "secrets_store_csi_driver" {
-  name = "${var.cluster_name}-secrets-store-csi"
-
-  assume_role_policy = jsonencode({
-    Version = "2012-10-17"
-    Statement = [{
-      Effect = "Allow"
-      Principal = {
-        Service = "pods.eks.amazonaws.com"
-      }
-      Action = [
-        "sts:AssumeRole",
-        "sts:TagSession"
-      ]
-      Condition = {
-        StringEquals = {
-          "eks.amazonaws.com:aud" = "sts.amazonaws.com"
-          "eks.amazonaws.com:sub" = "system:serviceaccount:kube-system:secrets-store-csi-driver"
-        }
-      }
-    }]
-  })
-
-  tags = var.tags
-}
-
-resource "aws_iam_role_policy_attachment" "secrets_store_csi_driver" {
-  role       = aws_iam_role.secrets_store_csi_driver.name
-  policy_arn = "arn:aws:iam::aws:policy/AmazonEKSSecretsStoreCSIControllerPolicy"
 }
 
 resource "aws_security_group" "nodes" {
