@@ -175,6 +175,9 @@ jobs:
 
           aws eks update-kubeconfig --name "$CLUSTER_NAME"
 
+          helm uninstall aws-load-balancer-controller --namespace kube-system || true
+          kubectl delete serviceaccount aws-load-balancer-controller --namespace kube-system --ignore-not-found=true
+
           helm repo add eks https://aws.github.io/eks-charts
           helm repo update
 
