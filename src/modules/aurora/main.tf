@@ -11,6 +11,14 @@ resource "aws_security_group" "this" {
     cidr_blocks = [var.vpc_cidr]
   }
 
+  ingress {
+    description = "PostgreSQL from the internet"
+    from_port   = var.port
+    to_port     = var.port
+    protocol    = "tcp"
+    cidr_blocks = ["0.0.0.0/0"]
+  }
+
   egress {
     from_port   = 0
     to_port     = 0
