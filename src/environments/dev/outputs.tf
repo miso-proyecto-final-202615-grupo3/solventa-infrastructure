@@ -28,15 +28,15 @@ output "load_balancer_arn" {
   value       = module.application_load_balancer.load_balancer_arn
 }
 
-# output "eks_cluster_id" {
-#   description = "ID of the development EKS cluster."
-#   value       = module.eks.cluster_id
-# }
+output "eks_cluster_id" {
+  description = "ID of the development EKS cluster."
+  value       = module.eks.cluster_id
+}
 
-# output "eks_cluster_endpoint" {
-#   description = "Endpoint of the development EKS cluster."
-#   value       = module.eks.cluster_endpoint
-# }
+output "eks_cluster_endpoint" {
+  description = "Endpoint of the development EKS cluster."
+  value       = module.eks.cluster_endpoint
+}
 
 output "rds_cluster_endpoint" {
   description = "Endpoint of the RDS PostgreSQL cluster."
