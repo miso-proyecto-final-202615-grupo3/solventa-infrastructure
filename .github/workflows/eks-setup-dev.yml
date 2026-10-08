@@ -41,12 +41,12 @@ jobs:
       - name: Install kubectl
         uses: azure/setup-kubectl@v5
         with:
-          version: v5.1.0
+          version: latest
 
       - name: Install Helm
         uses: azure/setup-helm@v5
         with:
-          version: v5.0.1
+          version: latest
 
       - name: Verify AWS identity and EKS cluster
         shell: bash
