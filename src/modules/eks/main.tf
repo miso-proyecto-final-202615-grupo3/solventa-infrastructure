@@ -22,7 +22,8 @@ resource "aws_eks_cluster" "this" {
   })
 
   depends_on = [
-    aws_iam_role.cluster
+    aws_iam_role.cluster,
+    aws_iam_role_policy_attachment.cluster
   ]
 }
 
@@ -170,6 +171,7 @@ resource "aws_eks_node_group" "this" {
   node_role_arn   = aws_iam_role.node.arn
   subnet_ids      = var.private_subnet_ids
   instance_types  = var.instance_types
+
   scaling_config {
     desired_size = var.desired_size
     min_size     = var.min_size
@@ -190,7 +192,10 @@ resource "aws_eks_node_group" "this" {
   })
 
   depends_on = [
-    aws_iam_role.node
+    aws_iam_role.node,
+    aws_iam_role_policy_attachment.node_worker,
+    aws_iam_role_policy_attachment.node_cni,
+    aws_iam_role_policy_attachment.node_ecr
   ]
 }
 
