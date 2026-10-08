@@ -62,13 +62,25 @@ jobs:
         shell: bash
         run: |
           set -euo pipefail
-          aws eks create-addon \
+
+          # Check if the addon is already installed and ACTIVE
+          ADDON_STATUS=$(aws eks describe-addon \
             --cluster-name "$CLUSTER_NAME" \
             --addon-name eks-pod-identity-agent \
-            --resolve-conflicts OVERWRITE
-          aws eks wait addon-active \
-            --cluster-name "$CLUSTER_NAME" \
-            --addon-name eks-pod-identity-agent
+            --query "addon.status" \
+            --output text 2>/dev/null || echo "NOT_FOUND")
+
+          if [ "$ADDON_STATUS" = "ACTIVE" ]; then
+            echo "Addon eks-pod-identity-agent is already installed and ACTIVE. Skipping creation."
+          else
+            aws eks create-addon \
+              --cluster-name "$CLUSTER_NAME" \
+              --addon-name eks-pod-identity-agent \
+              --resolve-conflicts OVERWRITE
+            aws eks wait addon-active \
+              --cluster-name "$CLUSTER_NAME" \
+              --addon-name eks-pod-identity-agent
+          fi
 
       - name: Configure AWS Load Balancer Controller Pod Identity
         shell: bash
@@ -87,13 +99,13 @@ jobs:
           if ! aws eks describe-pod-identity-association \
             --cluster-name "$CLUSTER_NAME" \
             --namespace kube-system \
-            --service-account-name aws-load-balancer-controller \
+            --service-account aws-load-balancer-controller \
             --query 'podIdentityAssociation.serviceAccount.name' \
             --output text 2>/dev/null; then
             aws eks create-pod-identity-association \
               --cluster-name "$CLUSTER_NAME" \
               --namespace kube-system \
-              --service-account-name aws-load-balancer-controller \
+              --service-account aws-load-balancer-controller \
               --role-arn "$LBC_ROLE_ARN"
           fi
 
@@ -114,13 +126,13 @@ jobs:
           if ! aws eks describe-pod-identity-association \
             --cluster-name "$CLUSTER_NAME" \
             --namespace kube-system \
-            --service-account-name secrets-store-csi-driver \
+            --service-account secrets-store-csi-driver \
             --query 'podIdentityAssociation.serviceAccount.name' \
             --output text 2>/dev/null; then
             aws eks create-pod-identity-association \
               --cluster-name "$CLUSTER_NAME" \
               --namespace kube-system \
-              --service-account-name secrets-store-csi-driver \
+              --service-account secrets-store-csi-driver \
               --role-arn "$SECRETS_CSI_ROLE_ARN"
           fi
 
@@ -169,13 +181,13 @@ jobs:
           aws eks describe-pod-identity-association \
             --cluster-name "$CLUSTER_NAME" \
             --namespace kube-system \
-            --service-account-name aws-load-balancer-controller \
+            --service-account aws-load-balancer-controller \
             --query 'podIdentityAssociation.{roleArn:roleArn,serviceAccount:serviceAccount}' \
             --output table
           aws eks describe-pod-identity-association \
             --cluster-name "$CLUSTER_NAME" \
             --namespace kube-system \
-            --service-account-name secrets-store-csi-driver \
+            --service-account secrets-store-csi-driver \
             --query 'podIdentityAssociation.{roleArn:roleArn,serviceAccount:serviceAccount}' \
             --output table
           aws eks describe-addon \
