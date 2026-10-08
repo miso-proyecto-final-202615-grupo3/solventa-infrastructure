@@ -194,20 +194,38 @@ resource "aws_eks_node_group" "this" {
   ]
 }
 
-resource "aws_eks_access_entry" "cluster_admin_access_entry" {
-  for_each      = toset(var.cluster_admin_principal_arns)
+resource "aws_eks_access_entry" "cluster_admin_access_entry_pipeline" {
   cluster_name  = aws_eks_cluster.this.name
-  principal_arn = each.value
+  principal_arn = var.cluster_admin_principal_arn_pipeline
   type          = "STANDARD"
 }
 
-resource "aws_eks_access_policy_association" "cluster_admin_policy_assoc" {
-  for_each     = aws_eks_access_entry.cluster_admin_access_entry
-  cluster_name = aws_eks_cluster.this.name
-  policy_arn   = "arn:aws:eks::aws:cluster-access-policy/AmazonEKSClusterAdminPolicy"
-  principal_arn = each.value.principal_arn
+resource "aws_eks_access_policy_association" "cluster_admin_policy_assoc_pipeline" {
+  cluster_name  = aws_eks_cluster.this.name
+  policy_arn    = "arn:aws:eks::aws:cluster-access-policy/AmazonEKSClusterAdminPolicy"
+  principal_arn = var.cluster_admin_principal_arn_pipeline
 
   access_scope {
     type = "cluster"
   }
+
+  depends_on = [aws_eks_access_entry.cluster_admin_access_entry_pipeline]
+}
+
+resource "aws_eks_access_entry" "cluster_admin_access_entry_group" {
+  cluster_name  = aws_eks_cluster.this.name
+  principal_arn = var.cluster_admin_principal_arn_group
+  type          = "STANDARD"
+}
+
+resource "aws_eks_access_policy_association" "cluster_admin_policy_assoc_group" {
+  cluster_name  = aws_eks_cluster.this.name
+  policy_arn    = "arn:aws:eks::aws:cluster-access-policy/AmazonEKSClusterAdminPolicy"
+  principal_arn = var.cluster_admin_principal_arn_group
+
+  access_scope {
+    type = "cluster"
+  }
+
+  depends_on = [aws_eks_access_entry.cluster_admin_access_entry_group]
 }

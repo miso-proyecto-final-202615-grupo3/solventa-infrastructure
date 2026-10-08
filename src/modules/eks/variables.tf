@@ -30,8 +30,12 @@ variable "cluster_log_types" {
   type = list(string)
 }
 
-variable "cluster_admin_principal_arns" {
-  type = list(string)
+variable "cluster_admin_principal_arn_pipeline" {
+  type = string
+}
+
+variable "cluster_admin_principal_arn_group" {
+  type = string
 }
 
 variable "node_group_name" {
