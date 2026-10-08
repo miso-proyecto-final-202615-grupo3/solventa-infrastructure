@@ -86,6 +86,7 @@ jobs:
         shell: bash
         run: |
           set -euo pipefail
+
           if ! aws iam get-role --role-name "$LBC_ROLE_NAME" >/dev/null 2>&1; then
             echo "Required IAM role $LBC_ROLE_NAME does not exist. Apply the Terraform module first." >&2
             exit 1
@@ -115,6 +116,7 @@ jobs:
         shell: bash
         run: |
           set -euo pipefail
+
           if ! aws iam get-role --role-name "$SECRETS_CSI_ROLE_NAME" >/dev/null 2>&1; then
             echo "Required IAM role $SECRETS_CSI_ROLE_NAME does not exist. Apply the Terraform module first." >&2
             exit 1
@@ -144,6 +146,8 @@ jobs:
         shell: bash
         run: |
           set -euo pipefail
+
+          aws eks update-kubeconfig --name "$CLUSTER_NAME"
 
           helm repo add eks https://aws.github.io/eks-charts
           helm repo update
