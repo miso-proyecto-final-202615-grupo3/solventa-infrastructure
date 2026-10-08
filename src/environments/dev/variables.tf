@@ -193,96 +193,106 @@ variable "ecr_keep_latest_images" {
   type        = number
 }
 
-variable "aurora_engine_version" {
-  description = "Aurora PostgreSQL engine version."
+variable "rds_engine_version" {
+  description = "RDS PostgreSQL engine version."
   type        = string
 }
 
-variable "aurora_database_name" {
-  description = "Initial database name for Aurora PostgreSQL."
-  type        = string
-  sensitive   = true
-}
-
-variable "aurora_master_username" {
-  description = "Master username for Aurora PostgreSQL."
+variable "rds_database_name" {
+  description = "Initial database name for RDS PostgreSQL."
   type        = string
   sensitive   = true
 }
 
-variable "aurora_master_password" {
-  description = "Master password for Aurora PostgreSQL."
+variable "rds_master_username" {
+  description = "Master username for RDS PostgreSQL."
   type        = string
   sensitive   = true
 }
 
-variable "aurora_port" {
-  description = "Port exposed by Aurora PostgreSQL."
+variable "rds_master_password" {
+  description = "Master password for RDS PostgreSQL."
+  type        = string
+  sensitive   = true
+}
+
+variable "rds_port" {
+  description = "Port exposed by RDS PostgreSQL."
   type        = number
 }
 
-variable "aurora_preferred_backup_window" {
-  description = "Preferred maintenance window for Aurora backups."
+variable "rds_preferred_backup_window" {
+  description = "Preferred maintenance window for RDS backups."
   type        = string
 }
 
-variable "aurora_backup_retention_period" {
-  description = "Number of days to retain Aurora backups."
+variable "rds_backup_retention_period" {
+  description = "Number of days to retain RDS backups."
   type        = number
 }
 
-variable "aurora_preferred_maintenance_window" {
-  description = "Preferred maintenance window for Aurora."
+variable "rds_preferred_maintenance_window" {
+  description = "Preferred maintenance window for RDS."
   type        = string
 }
 
-variable "aurora_storage_encrypted" {
-  description = "Enables encryption at rest for Aurora."
+variable "rds_allocated_storage" {
+  description = "Initial storage size for the RDS database instance."
+  type        = number
+}
+
+variable "rds_max_allocated_storage" {
+  description = "Maximum storage size for the RDS database instance."
+  type        = number
+}
+
+variable "rds_storage_encrypted" {
+  description = "Enables encryption at rest for RDS."
   type        = bool
 }
 
-variable "aurora_parameter_group_family" {
-  description = "Family of the Aurora parameter group."
+variable "rds_parameter_group_family" {
+  description = "Family of the RDS parameter group."
   type        = string
 }
 
-variable "aurora_instance_count" {
-  description = "Number of Aurora database instances."
+variable "rds_instance_count" {
+  description = "Number of RDS database instances."
   type        = number
 }
 
-variable "aurora_instance_class" {
-  description = "EC2 instance class used by Aurora database instances."
+variable "rds_instance_class" {
+  description = "EC2 instance class used by RDS database instances."
   type        = string
 }
 
-variable "aurora_skip_final_snapshot" {
-  description = "Skips final snapshot creation when destroying Aurora."
+variable "rds_skip_final_snapshot" {
+  description = "Skips final snapshot creation when destroying RDS."
   type        = bool
 }
 
-variable "aurora_deletion_protection" {
-  description = "Prevents deletion of the Aurora cluster."
+variable "rds_deletion_protection" {
+  description = "Prevents deletion of the RDS cluster."
   type        = bool
 }
 
-variable "aurora_apply_immediately" {
-  description = "Applies Aurora changes immediately instead of waiting for maintenance."
+variable "rds_apply_immediately" {
+  description = "Applies RDS changes immediately instead of waiting for maintenance."
   type        = bool
 }
 
-variable "aurora_serverlessv2_max_capacity" {
-  description = "Maximum capacity for Aurora Serverless v2."
+variable "rds_serverlessv2_max_capacity" {
+  description = "Maximum capacity for RDS Serverless v2."
   type        = number
 }
 
-variable "aurora_serverlessv2_min_capacity" {
-  description = "Minimum capacity for Aurora Serverless v2."
+variable "rds_serverlessv2_min_capacity" {
+  description = "Minimum capacity for RDS Serverless v2."
   type        = number
 }
 
-variable "aurora_serverlessv2_seconds_until_auto_pause" {
-  description = "Time in seconds before Aurora Serverless v2 pauses."
+variable "rds_serverlessv2_seconds_until_auto_pause" {
+  description = "Time in seconds before RDS Serverless v2 pauses."
   type        = number
 }
 

@@ -37,6 +37,14 @@ variable "preferred_maintenance_window" {
   type = string
 }
 
+variable "allocated_storage" {
+  type = number
+}
+
+variable "max_allocated_storage" {
+  type = number
+}
+
 variable "storage_encrypted" {
   type = bool
 }

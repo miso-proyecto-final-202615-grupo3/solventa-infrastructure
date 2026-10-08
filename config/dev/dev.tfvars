@@ -70,22 +70,24 @@ ecr_scan_on_push         = true
 ecr_encryption_type      = "AES256"
 ecr_keep_latest_images   = 14
 
-aurora_engine_version               = "18.6"
-aurora_port                         = 5432
-aurora_preferred_backup_window      = "03:00-04:00"
-aurora_backup_retention_period      = 1
-aurora_preferred_maintenance_window = "sun:04:00-sun:05:00"
-aurora_storage_encrypted            = true
-aurora_parameter_group_family       = "postgres18"
-aurora_instance_count               = 1
-aurora_instance_class               = "db.t3.micro"
-aurora_skip_final_snapshot          = true
-aurora_deletion_protection          = false
-aurora_apply_immediately            = false
+rds_engine_version               = "18.6"
+rds_port                         = 5432
+rds_preferred_backup_window      = "03:00-04:00"
+rds_backup_retention_period      = 1
+rds_preferred_maintenance_window = "sun:04:00-sun:05:00"
+rds_allocated_storage            = 20
+rds_max_allocated_storage        = 20
+rds_storage_encrypted            = true
+rds_parameter_group_family       = "postgres18"
+rds_instance_count               = 1
+rds_instance_class               = "db.t3.micro"
+rds_skip_final_snapshot          = true
+rds_deletion_protection          = false
+rds_apply_immediately            = false
 
-aurora_serverlessv2_max_capacity             = 1.0
-aurora_serverlessv2_min_capacity             = 0.0
-aurora_serverlessv2_seconds_until_auto_pause = 3600
+rds_serverlessv2_max_capacity             = 1.0
+rds_serverlessv2_min_capacity             = 0.0
+rds_serverlessv2_seconds_until_auto_pause = 3600
 
 storage_bucket_name = "solventa-dev-storage-6fba06c21ab7"
 

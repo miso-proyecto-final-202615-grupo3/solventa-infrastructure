@@ -1,6 +1,6 @@
 resource "aws_security_group" "this" {
   name        = "${var.cluster_identifier}-sg"
-  description = "Allow Aurora PostgreSQL traffic from the application VPC"
+  description = "Allow RDS PostgreSQL traffic from the application VPC"
   vpc_id      = var.vpc_id
 
   ingress {
@@ -34,8 +34,8 @@ resource "aws_db_instance" "this" {
   engine                  = "postgres"
   engine_version          = var.engine_version
   instance_class          = var.instance_class
-  allocated_storage       = 20
-  max_allocated_storage   = 20
+  allocated_storage       = var.allocated_storage
+  max_allocated_storage   = var.max_allocated_storage
   storage_type            = "gp2"
   db_name                 = var.database_name
   username                = var.master_username
@@ -49,7 +49,7 @@ resource "aws_db_instance" "this" {
   vpc_security_group_ids  = [aws_security_group.this.id]
   db_subnet_group_name    = aws_db_subnet_group.this.name
   skip_final_snapshot     = var.skip_final_snapshot
-  deletion_protection     = false
+  deletion_protection     = var.deletion_protection
   apply_immediately       = var.apply_immediately
   publicly_accessible     = true
 

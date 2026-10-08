@@ -38,9 +38,9 @@ output "load_balancer_arn" {
 #   value       = module.eks.cluster_endpoint
 # }
 
-output "aurora_cluster_endpoint" {
-  description = "Endpoint of the Aurora PostgreSQL cluster."
-  value       = module.aurora.cluster_endpoint
+output "rds_cluster_endpoint" {
+  description = "Endpoint of the RDS PostgreSQL cluster."
+  value       = module.rds.cluster_endpoint
 }
 
 output "assets_bucket_name" {

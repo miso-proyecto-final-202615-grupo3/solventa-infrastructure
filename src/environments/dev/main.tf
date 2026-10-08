@@ -73,34 +73,36 @@ module "ecr" {
   tags                 = var.tags
 }
 
-module "aurora" {
-  source = "../../modules/aurora"
+module "rds" {
+  source = "../../modules/rds"
 
-  cluster_identifier           = "${var.project}-${var.environment}-aurora"
-  engine_version               = var.aurora_engine_version
-  database_name                = var.aurora_database_name
-  master_username              = var.aurora_master_username
-  master_password              = var.aurora_master_password
-  port                         = var.aurora_port
-  preferred_backup_window      = var.aurora_preferred_backup_window
-  backup_retention_period      = var.aurora_backup_retention_period
-  preferred_maintenance_window = var.aurora_preferred_maintenance_window
-  storage_encrypted            = var.aurora_storage_encrypted
-  parameter_group_name         = "${var.project}-${var.environment}-aurora-pg"
-  parameter_group_family       = var.aurora_parameter_group_family
+  cluster_identifier           = "${var.project}-${var.environment}-rds"
+  engine_version               = var.rds_engine_version
+  database_name                = var.rds_database_name
+  master_username              = var.rds_master_username
+  master_password              = var.rds_master_password
+  port                         = var.rds_port
+  preferred_backup_window      = var.rds_preferred_backup_window
+  backup_retention_period      = var.rds_backup_retention_period
+  preferred_maintenance_window = var.rds_preferred_maintenance_window
+  allocated_storage            = var.rds_allocated_storage
+  max_allocated_storage        = var.rds_max_allocated_storage
+  storage_encrypted            = var.rds_storage_encrypted
+  parameter_group_name         = "${var.project}-${var.environment}-rds-pg"
+  parameter_group_family       = var.rds_parameter_group_family
   vpc_id                       = module.vpc.vpc_id
   vpc_cidr                     = module.vpc.vpc_cidr
-  subnet_group_name            = "${var.project}-${var.environment}-aurora-subnets"
+  subnet_group_name            = "${var.project}-${var.environment}-rds-subnets"
   subnet_ids                   = module.vpc.private_database_subnet_ids
-  instance_count               = var.aurora_instance_count
-  instance_class               = var.aurora_instance_class
-  skip_final_snapshot          = var.aurora_skip_final_snapshot
-  deletion_protection          = var.aurora_deletion_protection
-  apply_immediately            = var.aurora_apply_immediately
+  instance_count               = var.rds_instance_count
+  instance_class               = var.rds_instance_class
+  skip_final_snapshot          = var.rds_skip_final_snapshot
+  deletion_protection          = var.rds_deletion_protection
+  apply_immediately            = var.rds_apply_immediately
   serverlessv2_scaling_configuration = {
-    max_capacity             = var.aurora_serverlessv2_max_capacity
-    min_capacity             = var.aurora_serverlessv2_min_capacity
-    seconds_until_auto_pause = var.aurora_serverlessv2_seconds_until_auto_pause
+    max_capacity             = var.rds_serverlessv2_max_capacity
+    min_capacity             = var.rds_serverlessv2_min_capacity
+    seconds_until_auto_pause = var.rds_serverlessv2_seconds_until_auto_pause
   }
   tags = var.tags
 }
