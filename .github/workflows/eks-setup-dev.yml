@@ -173,9 +173,9 @@ jobs:
         run: |
           set -euo pipefail
 
-          kubectl logs -n kube-system deployment/aws-load-balancer-controller -c aws-load-balancer-controller 
+          aws eks update-kubeconfig --name "$CLUSTER_NAME"
 
-          # aws eks update-kubeconfig --name "$CLUSTER_NAME"
+          kubectl logs -n kube-system deployment/aws-load-balancer-controller -c aws-load-balancer-controller 
 
           # helm uninstall aws-load-balancer-controller --namespace kube-system || true
           # kubectl delete serviceaccount aws-load-balancer-controller --namespace kube-system --ignore-not-found=true
