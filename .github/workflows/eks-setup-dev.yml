@@ -7,10 +7,6 @@ on:
         description: Name of the existing EKS cluster.
         required: true
         default: solventa-dev-eks
-      public_endpoint_cidrs:
-        description: CIDR blocks allowed to access the public EKS management endpoint.
-        required: true
-        default: 0.0.0.0/0
 
 permissions:
   contents: read
@@ -23,9 +19,8 @@ concurrency:
 env:
   AWS_REGION: ${{ secrets.AWS_REGION }}
   CLUSTER_NAME: ${{ github.event.inputs.cluster_name }}
-  PUBLIC_ENDPOINT_CIDRS: ${{ github.event.inputs.public_endpoint_cidrs }}
-  LBC_ROLE_NAME: ${{ github.event.inputs.cluster_name }}-aws-lbc
-  SECRETS_CSI_ROLE_NAME: ${{ github.event.inputs.cluster_name }}-secrets-store-csi
+  LBC_ROLE_NAME: AWSLoadBalancerControllerIAMRole
+  SECRETS_CSI_ROLE_NAME: SecretStoreCSIDriverIAMPolicy
 
 jobs:
   eks-setup-dev:
@@ -44,12 +39,12 @@ jobs:
           aws-region: ${{ secrets.AWS_REGION }}
 
       - name: Install kubectl
-        uses: azure/setup-kubectl@v4
+        uses: azure/setup-kubectl@v5
         with:
-          version: latest
+          version: v5.1.0
 
       - name: Install Helm
-        uses: azure/setup-helm@v3
+        uses: azure/setup-helm@v5
         with:
           version: v5.0.1
 
@@ -163,12 +158,14 @@ jobs:
         shell: bash
         run: |
           set -euo pipefail
-          kubectl get pods -A -l app.kubernetes.io/name=aws-load-balancer-controller \
-            --output wide
+
           kubectl get pods -A -l app=eks-pod-identity-agent \
+            --output wide
+          kubectl get pods -A -l app.kubernetes.io/name=aws-load-balancer-controller \
             --output wide
           kubectl get pods -A -l app=secrets-store-csi-driver \
             --output wide
+
           aws eks describe-pod-identity-association \
             --cluster-name "$CLUSTER_NAME" \
             --namespace kube-system \
