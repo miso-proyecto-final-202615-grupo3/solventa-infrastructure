@@ -55,7 +55,7 @@ resource "aws_db_subnet_group" "this" {
   tags = merge(var.tags, { Name = var.subnet_group_name })
 }
 
-resource "aws_rds_cluster_parameter_group" "this" {
+resource "aws_db_parameter_group" "this" {
   name        = var.parameter_group_name
   family      = var.parameter_group_family
   description = "Parameters for ${var.cluster_identifier}"
