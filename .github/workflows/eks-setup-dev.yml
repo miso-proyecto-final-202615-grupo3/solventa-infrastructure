@@ -2,11 +2,6 @@ name: "DEV EKS Cluster - Setup"
 
 on:
   workflow_dispatch:
-    inputs:
-      cluster_name:
-        description: Name of the existing EKS cluster.
-        required: true
-        default: solventa-dev-eks
 
 permissions:
   contents: read
@@ -18,7 +13,8 @@ concurrency:
 
 env:
   AWS_REGION: ${{ secrets.AWS_REGION }}
-  CLUSTER_NAME: ${{ github.event.inputs.cluster_name }}
+  CLUSTER_NAME: solventa-dev-eks
+  CLOUDWATCH_ROLE_NAME: CloudWatchObservabilityIAMRole
   LBC_ROLE_NAME: AWSLoadBalancerControllerIAMRole
   SECRETS_CSI_ROLE_NAME: SecretStoreCSIDriverIAMRole
 
@@ -80,6 +76,30 @@ jobs:
             aws eks wait addon-active \
               --cluster-name "$CLUSTER_NAME" \
               --addon-name eks-pod-identity-agent
+          fi
+
+      - name: Install Amazon CloudWatch Observability Add-on
+        shell: bash
+        run: |
+          set -euo pipefail
+
+          # Check if the addon is already installed and ACTIVE
+          ADDON_STATUS=$(aws eks describe-addon \
+            --cluster-name "$CLUSTER_NAME" \
+            --addon-name amazon-cloudwatch-observability \
+            --query "addon.status" \
+            --output text 2>/dev/null || echo "NOT_FOUND")
+
+          if [ "$ADDON_STATUS" = "ACTIVE" ]; then
+            echo "Addon amazon-cloudwatch-observability is already installed and ACTIVE. Skipping creation."
+          else
+            aws eks create-addon \
+              --cluster-name "$CLUSTER_NAME" \
+              --addon-name amazon-cloudwatch-observability \
+              --resolve-conflicts OVERWRITE
+            aws eks wait addon-active \
+              --cluster-name "$CLUSTER_NAME" \
+              --addon-name amazon-cloudwatch-observability
           fi
 
       - name: Configure AWS Load Balancer Controller Pod Identity
