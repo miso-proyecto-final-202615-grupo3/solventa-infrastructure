@@ -173,23 +173,25 @@ jobs:
         run: |
           set -euo pipefail
 
-          aws eks update-kubeconfig --name "$CLUSTER_NAME"
+          kubectl logs -n kube-system deployment/aws-load-balancer-controller -c aws-load-balancer-controller 
 
-          helm uninstall aws-load-balancer-controller --namespace kube-system || true
-          kubectl delete serviceaccount aws-load-balancer-controller --namespace kube-system --ignore-not-found=true
+          # aws eks update-kubeconfig --name "$CLUSTER_NAME"
 
-          helm repo add eks https://aws.github.io/eks-charts
-          helm repo update
+          # helm uninstall aws-load-balancer-controller --namespace kube-system || true
+          # kubectl delete serviceaccount aws-load-balancer-controller --namespace kube-system --ignore-not-found=true
 
-          helm upgrade --install aws-load-balancer-controller eks/aws-load-balancer-controller \
-            --namespace kube-system \
-            --create-namespace \
-            --set clusterName="$CLUSTER_NAME" \
-            --set enablePodIdentity=true \
-            --set serviceAccount.create=true \
-            --set serviceAccount.name=aws-load-balancer-controller \
-            --wait \
-            --timeout 10m
+          # helm repo add eks https://aws.github.io/eks-charts
+          # helm repo update
+
+          # helm upgrade --install aws-load-balancer-controller eks/aws-load-balancer-controller \
+          #   --namespace kube-system \
+          #   --create-namespace \
+          #   --set clusterName="$CLUSTER_NAME" \
+          #   --set enablePodIdentity=true \
+          #   --set serviceAccount.create=true \
+          #   --set serviceAccount.name=aws-load-balancer-controller \
+          #   --wait \
+          #   --timeout 10m
 
       - name: Install AWS Secrets Store CSI Driver Add-on
         shell: bash
