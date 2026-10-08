@@ -21,11 +21,3 @@ output "node_group_name" {
 output "node_role_arn" {
   value = aws_iam_role.node.arn
 }
-
-output "load_balancer_controller_role_arn" {
-  value = aws_iam_role.load_balancer_controller.arn
-}
-
-output "secrets_store_csi_driver_role_arn" {
-  value = aws_iam_role.secrets_store_csi_driver.arn
-}
