@@ -39,13 +39,9 @@ resource "aws_cognito_user_pool_client" "this" {
   # explicit_auth_flows
   # ALLOW_USER_AUTH: Allows clients to exchange refresh tokens for new access tokens
   # ALLOW_REFRESH_TOKEN_AUTH: Powers choice-based authentication (PASSWORD & EMAIL_OTP)
-  explicit_auth_flows = var.explicit_auth_flows
-
+  explicit_auth_flows                  = var.explicit_auth_flows
   allowed_oauth_flows_user_pool_client = var.allowed_oauth_flows_user_pool_client
-  allowed_oauth_flows                  = var.allowed_oauth_flows
-  allowed_oauth_scopes                 = var.allowed_oauth_scopes
-
-  generate_secret = var.generate_secret
+  generate_secret                      = var.generate_secret
 
   callback_urls = var.callback_urls
   logout_urls   = var.logout_urls
