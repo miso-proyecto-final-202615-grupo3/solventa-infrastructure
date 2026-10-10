@@ -126,7 +126,7 @@ jobs:
 
           ASSOC_EXISTS=$(aws eks list-pod-identity-associations \
             --cluster-name "$CLUSTER_NAME" \
-            --namespace kube-system \
+            --namespace aws-secrets-manager \
             --service-account secrets-store-csi-driver \
             --query 'associations[0].associationArn' \
             --output text 2>/dev/null || echo "None")
@@ -134,7 +134,7 @@ jobs:
           if [ "$ASSOC_EXISTS" = "None" ] || [ -z "$ASSOC_EXISTS" ]; then
             aws eks create-pod-identity-association \
               --cluster-name "$CLUSTER_NAME" \
-              --namespace kube-system \
+              --namespace aws-secrets-manager \
               --service-account secrets-store-csi-driver \
               --role-arn "$SECRETS_CSI_ROLE_ARN"
           fi
@@ -156,7 +156,7 @@ jobs:
 
           ASSOC_EXISTS=$(aws eks list-pod-identity-associations \
             --cluster-name "$CLUSTER_NAME" \
-            --namespace kube-system \
+            --namespace amazon-cloudwatch \
             --service-account cloudwatch-agent \
             --query 'associations[0].associationArn' \
             --output text 2>/dev/null || echo "None")
@@ -164,7 +164,7 @@ jobs:
           if [ "$ASSOC_EXISTS" = "None" ] || [ -z "$ASSOC_EXISTS" ]; then
             aws eks create-pod-identity-association \
               --cluster-name "$CLUSTER_NAME" \
-              --namespace kube-system \
+              --namespace amazon-cloudwatch \
               --service-account cloudwatch-agent \
               --role-arn "$CLOUDWATCH_ROLE_ARN"
           fi
