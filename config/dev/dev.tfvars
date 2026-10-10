@@ -95,17 +95,11 @@ cognito_allowed_first_auth_factors           = ["PASSWORD", "EMAIL_OTP"]
 cognito_client_names                         = ["solventa-dev-web", "solventa-dev-mobile"]
 cognito_explicit_auth_flows                  = ["ALLOW_USER_AUTH", "ALLOW_REFRESH_TOKEN_AUTH"]
 cognito_allowed_oauth_flows_user_pool_client = true
-cognito_allowed_oauth_flows                  = ["code"]
-cognito_allowed_oauth_scopes                 = ["openid", "email", "profile"]
+cognito_allowed_oauth_flows                  = []
+cognito_allowed_oauth_scopes                 = []
 cognito_generate_secret                      = false
-cognito_callback_urls = [
-  "http://localhost:4200/",
-  "https://dev.solventa.com/"
-]
-cognito_logout_urls = [
-  "http://localhost:4200/",
-  "https://dev.solventa.com/"
-]
+cognito_callback_urls                        = []
+cognito_logout_urls                          = []
 
 api_stage_name                   = "dev"
 api_route_key                    = "$default"
