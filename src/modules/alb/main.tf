@@ -70,28 +70,28 @@ resource "aws_security_group" "this" {
 #   })
 # }
 
-# resource "aws_lb_listener" "http" {
-#   load_balancer_arn = aws_lb.this.arn
-#   port              = 80
-#   protocol          = "HTTP"
+resource "aws_lb_listener" "http" {
+  load_balancer_arn = aws_lb.this.arn
+  port              = 80
+  protocol          = "HTTP"
 
-#   # Define a dummy default action (Kubernetes will inject its own rules over this)
-#   default_action {
-#     type = "fixed-response"
-#     fixed_response {
-#       content_type = "text/plain"
-#       message_body = "404 Not Found"
-#       status_code  = "404"
-#     }
-#   }
+  # Define a dummy default action (Kubernetes will inject its own rules over this)
+  default_action {
+    type = "fixed-response"
+    fixed_response {
+      content_type = "text/plain"
+      message_body = "404 Not Found"
+      status_code  = "404"
+    }
+  }
 
-#   # CRITICAL: Tell Terraform to NEVER touch or reset the rules added by Kubernetes
-#   lifecycle {
-#     ignore_changes = [
-#       default_action,
-#     ]
-#   }
-# }
+  # CRITICAL: Tell Terraform to NEVER touch or reset the rules added by Kubernetes
+  lifecycle {
+    ignore_changes = [
+      default_action,
+    ]
+  }
+}
 
 # resource "aws_lb_listener" "https" {
 #   count = var.certificate_arn == null ? 0 : 1
