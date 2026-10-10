@@ -16,7 +16,7 @@ env:
   CLUSTER_NAME: solventa-dev-eks
   VPC_NAME: solventa-dev-vpc
   LBC_ROLE_NAME: AWSLoadBalancerControllerIAMRole
-  SECRETS_CSI_ROLE_NAME: SecretStoreCSIDriverIAMRole
+  SECRETS_CSI_ROLE_NAME: SolventaAppRole
   CLOUDWATCH_ROLE_NAME: CloudWatchObservabilityIAMRole
 
 jobs:
@@ -127,7 +127,7 @@ jobs:
           ASSOC_EXISTS=$(aws eks list-pod-identity-associations \
             --cluster-name "$CLUSTER_NAME" \
             --namespace solventa-dev \
-            --service-account secrets-store-csi-driver \
+            --service-account solventa-app-sa \
             --query 'associations[0].associationArn' \
             --output text 2>/dev/null || echo "None")
 
@@ -135,7 +135,7 @@ jobs:
             aws eks create-pod-identity-association \
               --cluster-name "$CLUSTER_NAME" \
               --namespace solventa-dev \
-              --service-account secrets-store-csi-driver \
+              --service-account solventa-app-sa \
               --role-arn "$SECRETS_CSI_ROLE_ARN"
           fi
 
