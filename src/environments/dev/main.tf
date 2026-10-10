@@ -33,7 +33,7 @@ module "application_load_balancer" {
   health_check_path                = var.alb_health_check_path
   health_check_timeout             = var.alb_health_check_timeout
   health_check_unhealthy_threshold = var.alb_health_check_unhealthy_threshold
-  tags                             = var.tags
+  tags                             = merge(var.tags, { "elbv2.k8s.aws/cluster" = "${var.project}-${var.environment}-eks" })
 }
 
 module "eks" {

@@ -46,48 +46,50 @@ resource "aws_security_group" "this" {
   })
 }
 
-resource "aws_lb_target_group" "this" {
-  name        = var.target_group_name
-  port        = var.target_port
-  protocol    = var.target_protocol
-  vpc_id      = var.vpc_id
-  target_type = "ip"
+# resource "aws_lb_target_group" "this" {
+#   name        = var.target_group_name
+#   port        = var.target_port
+#   protocol    = var.target_protocol
+#   vpc_id      = var.vpc_id
+#   target_type = "ip"
 
-  health_check {
-    enabled             = true
-    healthy_threshold   = var.health_check_healthy_threshold
-    interval            = var.health_check_interval
-    matcher             = "200"
-    path                = var.health_check_path
-    port                = "traffic-port"
-    protocol            = "HTTP"
-    timeout             = var.health_check_timeout
-    unhealthy_threshold = var.health_check_unhealthy_threshold
-  }
+#   health_check {
+#     enabled             = true
+#     healthy_threshold   = var.health_check_healthy_threshold
+#     interval            = var.health_check_interval
+#     matcher             = "200"
+#     path                = var.health_check_path
+#     port                = "traffic-port"
+#     protocol            = "HTTP"
+#     timeout             = var.health_check_timeout
+#     unhealthy_threshold = var.health_check_unhealthy_threshold
+#   }
 
-  tags = merge(var.tags, {
-    Name = var.target_group_name
-  })
-}
+#   tags = merge(var.tags, {
+#     Name = var.target_group_name
+#   })
+# }
 
 resource "aws_lb_listener" "http" {
   load_balancer_arn = aws_lb.this.arn
   port              = 80
   protocol          = "HTTP"
 
-  # default_action {
-  #   type = "redirect"
-
-  #   redirect {
-  #     protocol    = "HTTPS"
-  #     port        = "443"
-  #     status_code = "HTTP_301"
-  #   }
-  # }
-
+  # Define a dummy default action (Kubernetes will inject its own rules over this)
   default_action {
-    type             = "forward"
-    target_group_arn = aws_lb_target_group.this.arn
+    type = "fixed-response"
+    fixed_response {
+      content_type = "text/plain"
+      message_body = "404 Not Found"
+      status_code  = "404"
+    }
+  }
+
+  # CRITICAL: Tell Terraform to NEVER touch or reset the rules added by Kubernetes
+  lifecycle {
+    ignore_changes = [
+      default_action,
+    ]
   }
 }
 
