@@ -2,10 +2,6 @@ variable "user_pool_name" {
   type = string
 }
 
-variable "username_attributes" {
-  type = list(string)
-}
-
 variable "client_names" {
   type = list(string)
 }
@@ -14,7 +10,11 @@ variable "allowed_oauth_scopes" {
   type = list(string)
 }
 
-variable "supported_identity_providers" {
+variable "allowed_first_auth_factors" {
+  type = list(string)
+}
+
+variable "explicit_auth_flows" {
   type = list(string)
 }
 

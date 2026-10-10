@@ -114,18 +114,19 @@ module "storage_bucket" {
   tags        = var.tags
 }
 
-# module "cognito" {
-#   source = "../../modules/cognito"
+module "cognito" {
+  source = "../../modules/cognito"
 
-#   user_pool_name               = "${var.project}-${var.environment}-cognito-customers"
-#   client_names                 = var.cognito_client_names
-#   allowed_oauth_scopes         = var.cognito_allowed_oauth_scopes
-#   supported_identity_providers = var.cognito_supported_identity_providers
-#   generate_secret              = var.cognito_generate_secret
-#   callback_urls                = var.cognito_callback_urls
-#   logout_urls                  = var.cognito_logout_urls
-#   tags                         = var.tags
-# }
+  user_pool_name             = "${var.project}-${var.environment}-cognito-customers"
+  client_names               = var.cognito_client_names
+  allowed_oauth_scopes       = var.cognito_allowed_oauth_scopes
+  allowed_first_auth_factors = var.cognito_allowed_first_auth_factors
+  explicit_auth_flows        = var.explicit_auth_flows
+  generate_secret            = var.cognito_generate_secret
+  callback_urls              = var.cognito_callback_urls
+  logout_urls                = var.cognito_logout_urls
+  tags                       = var.tags
+}
 
 # module "api_gateway" {
 #   source = "../../modules/api_gateway"
@@ -146,7 +147,7 @@ module "storage_bucket" {
 #   queue_name                 = "${var.project}-${var.environment}-events"
 #   visibility_timeout_seconds = var.sqs_visibility_timeout_seconds
 #   message_retention_seconds  = var.sqs_message_retention_seconds
-#   kms_master_key_id          = module.kms.key_id
+#   kms_master_key_id          = module.kms_key.key_id
 #   redrive_policy             = var.sqs_redrive_policy
 #   principal_services         = var.sqs_principal_services
 #   tags                       = var.tags
@@ -156,30 +157,20 @@ module "storage_bucket" {
 #   source = "../../modules/sns"
 
 #   topic_name         = "${var.project}-${var.environment}-notifications"
-#   kms_master_key_id  = module.kms.key_id
+#   kms_master_key_id  = module.kms_key.key_id
 #   endpoint_arns      = var.sns_endpoint_arns
 #   protocols          = var.sns_protocols
 #   principal_services = var.sns_principal_services
 #   tags               = var.tags
 # }
 
-# module "kms" {
-#   source = "../../modules/kms"
+module "kms_key_data" {
+  source = "../../modules/kms"
 
-#   key_name                = "${var.project}-${var.environment}-key"
-#   alias_name              = "alias/${var.project}-${var.environment}"
-#   description             = "KMS key for Solventa ${var.environment} secrets and data"
-#   deletion_window_in_days = var.kms_deletion_window_in_days
-#   enable_key_rotation     = var.kms_enable_key_rotation
-#   tags                    = var.tags
-# }
-
-# module "secrets_manager" {
-#   source = "../../modules/secrets_manager"
-
-#   secret_name            = "${var.project}-${var.environment}-secrets"
-#   kms_key_id             = module.kms.key_id
-#   rotation_schedule_days = var.secrets_rotation_schedule_days
-#   rotation_lambda_arn    = var.secrets_rotation_lambda_arn
-#   tags                   = var.tags
-# }
+  key_name                = var.data_kms_key_name
+  alias_name              = var.data_kms_key_alias_name
+  description             = var.data_kms_key_description
+  deletion_window_in_days = var.data_kms_key_deletion_window_in_days
+  enable_key_rotation     = var.data_kms_key_enable_key_rotation
+  tags                    = var.tags
+}

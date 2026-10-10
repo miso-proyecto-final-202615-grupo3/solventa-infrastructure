@@ -301,7 +301,22 @@ variable "storage_bucket_name" {
   type        = string
 }
 
-variable "kms_deletion_window_in_days" {
+variable "data_kms_key_name" {
+  description = "Name of the KMS key for application data."
+  type        = string
+}
+
+variable "data_kms_key_alias_name" {
+  description = "Alias of the KMS key for application data."
+  type        = string
+}
+
+variable "data_kms_key_description" {
+  description = "Description of the KMS key for application data."
+  type        = string
+}
+
+variable "data_kms_key_deletion_window_in_days" {
   description = "Waiting period before KMS key deletion."
   type        = number
 }
@@ -336,8 +351,13 @@ variable "cognito_allowed_oauth_scopes" {
   type        = list(string)
 }
 
-variable "cognito_supported_identity_providers" {
-  description = "Identity providers supported by Cognito clients."
+variable "cognito_allowed_first_auth_factors" {
+  description = "First authentication factors allowed for Cognito sign-in."
+  type        = list(string)
+}
+
+variable "explicit_auth_flows" {
+  description = "Explicit authentication flows allowed for Cognito clients."
   type        = list(string)
 }
 
@@ -391,17 +411,8 @@ variable "sns_principal_services" {
   type        = list(string)
 }
 
-variable "kms_enable_key_rotation" {
+variable "data_kms_key_enable_key_rotation" {
   description = "Enables automatic KMS key rotation."
   type        = bool
 }
 
-variable "secrets_rotation_schedule_days" {
-  description = "Days before Secrets Manager rotates a secret."
-  type        = number
-}
-
-variable "secrets_rotation_lambda_arn" {
-  description = "Lambda ARN used to rotate a secret."
-  type        = string
-}

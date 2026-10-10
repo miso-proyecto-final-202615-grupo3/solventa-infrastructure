@@ -91,12 +91,19 @@ rds_serverlessv2_seconds_until_auto_pause = 3600
 
 storage_bucket_name = "solventa-dev-storage-6fba06c21ab7"
 
-cognito_client_names                 = ["solventa-dev-web", "solventa-dev-mobile"]
-cognito_allowed_oauth_scopes         = ["openid", "email", "profile"]
-cognito_supported_identity_providers = []
-cognito_generate_secret              = true
-cognito_callback_urls                = []
-cognito_logout_urls                  = []
+cognito_client_names               = ["solventa-dev-web", "solventa-dev-mobile"]
+cognito_allowed_oauth_scopes       = ["openid", "email", "profile"]
+cognito_allowed_first_auth_factors = ["PASSWORD", "EMAIL_OTP"]
+cognito_generate_secret            = false
+explicit_auth_flows                = ["ALLOW_USER_AUTH", "ALLOW_REFRESH_TOKEN_AUTH"]
+cognito_callback_urls = [
+  "http://localhost:4200/",
+  "https://dev.solventa.com/"
+]
+cognito_logout_urls = [
+  "http://localhost:4200/",
+  "https://dev.solventa.com/"
+]
 
 api_stage_name                   = "dev"
 api_route_key                    = "$default"
@@ -112,8 +119,8 @@ sns_principal_services = ["sqs.amazonaws.com"]
 sns_endpoint_arns      = []
 sns_protocols          = []
 
-kms_deletion_window_in_days = 30
-kms_enable_key_rotation     = true
-
-secrets_rotation_schedule_days = 0
-secrets_rotation_lambda_arn    = ""
+data_kms_key_name                    = "solventa-dev-kms-key-appdata"
+data_kms_key_alias_name              = "alias/solventa-dev-appdata-key"
+data_kms_key_description             = "KMS key for Solventa dev application data"
+data_kms_key_deletion_window_in_days = 30
+data_kms_key_enable_key_rotation     = true
