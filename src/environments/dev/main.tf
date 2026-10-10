@@ -164,7 +164,7 @@ module "cognito" {
 #   tags               = var.tags
 # }
 
-module "kms_key_data" {
+module "kms_key_appdata" {
   source = "../../modules/kms"
 
   key_name                = var.data_kms_key_name
