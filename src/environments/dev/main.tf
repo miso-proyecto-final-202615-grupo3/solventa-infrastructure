@@ -117,15 +117,17 @@ module "storage_bucket" {
 module "cognito" {
   source = "../../modules/cognito"
 
-  user_pool_name             = "${var.project}-${var.environment}-cognito-customers"
-  client_names               = var.cognito_client_names
-  allowed_oauth_scopes       = var.cognito_allowed_oauth_scopes
-  allowed_first_auth_factors = var.cognito_allowed_first_auth_factors
-  explicit_auth_flows        = var.explicit_auth_flows
-  generate_secret            = var.cognito_generate_secret
-  callback_urls              = var.cognito_callback_urls
-  logout_urls                = var.cognito_logout_urls
-  tags                       = var.tags
+  user_pool_name                       = "${var.project}-${var.environment}-cognito-customers"
+  client_names                         = var.cognito_client_names
+  allowed_oauth_scopes                 = var.cognito_allowed_oauth_scopes
+  allowed_oauth_flows_user_pool_client = var.cognito_allowed_oauth_flows_user_pool_client
+  allowed_oauth_flows                  = var.cognito_allowed_oauth_flows
+  allowed_first_auth_factors           = var.cognito_allowed_first_auth_factors
+  explicit_auth_flows                  = var.cognito_explicit_auth_flows
+  generate_secret                      = var.cognito_generate_secret
+  callback_urls                        = var.cognito_callback_urls
+  logout_urls                          = var.cognito_logout_urls
+  tags                                 = var.tags
 }
 
 # module "api_gateway" {

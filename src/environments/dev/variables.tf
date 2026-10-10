@@ -351,12 +351,22 @@ variable "cognito_allowed_oauth_scopes" {
   type        = list(string)
 }
 
+variable "cognito_allowed_oauth_flows_user_pool_client" {
+  description = "Enables OAuth flows for Cognito user pool clients."
+  type        = bool
+}
+
+variable "cognito_allowed_oauth_flows" {
+  description = "OAuth flows allowed for Cognito user pool clients."
+  type        = list(string)
+}
+
 variable "cognito_allowed_first_auth_factors" {
   description = "First authentication factors allowed for Cognito sign-in."
   type        = list(string)
 }
 
-variable "explicit_auth_flows" {
+variable "cognito_explicit_auth_flows" {
   description = "Explicit authentication flows allowed for Cognito clients."
   type        = list(string)
 }
