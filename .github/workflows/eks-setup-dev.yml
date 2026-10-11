@@ -16,7 +16,7 @@ env:
   CLUSTER_NAME: solventa-dev-eks
   VPC_NAME: solventa-dev-vpc
   LBC_ROLE_NAME: AWSLoadBalancerControllerIAMRole
-  SECRETS_CSI_ROLE_NAME: SolventaAppRole
+  ESO_ROLE_NAME: ExternalOperatorIAMRole
   CLOUDWATCH_ROLE_NAME: CloudWatchObservabilityIAMRole
 
 jobs:
@@ -109,34 +109,34 @@ jobs:
               --role-arn "$LBC_ROLE_ARN"
           fi
 
-      - name: Configure Secrets Store CSI Driver Pod Identity
+      - name: Configure External Secrets Operator Pod Identity
         shell: bash
         run: |
           set -euo pipefail
 
-          if ! aws iam get-role --role-name "$SECRETS_CSI_ROLE_NAME" >/dev/null 2>&1; then
-            echo "Required IAM role $SECRETS_CSI_ROLE_NAME does not exist. Apply the Terraform module first." >&2
+          if ! aws iam get-role --role-name "$ESO_ROLE_NAME" >/dev/null 2>&1; then
+            echo "Required IAM role $ESO_ROLE_NAME does not exist. Apply the Terraform module first." >&2
             exit 1
           fi
 
-          SECRETS_CSI_ROLE_ARN="$(aws iam get-role \
-            --role-name "$SECRETS_CSI_ROLE_NAME" \
+          ESO_ROLE_ARN="$(aws iam get-role \
+            --role-name "$ESO_ROLE_NAME" \
             --query 'Role.Arn' \
             --output text)"
 
           ASSOC_EXISTS=$(aws eks list-pod-identity-associations \
             --cluster-name "$CLUSTER_NAME" \
-            --namespace solventa-dev \
-            --service-account solventa-app-sa \
+            --namespace external-secrets \
+            --service-account external-secrets-sa \
             --query 'associations[0].associationArn' \
             --output text 2>/dev/null || echo "None")
 
           if [ "$ASSOC_EXISTS" = "None" ] || [ -z "$ASSOC_EXISTS" ]; then
             aws eks create-pod-identity-association \
               --cluster-name "$CLUSTER_NAME" \
-              --namespace solventa-dev \
-              --service-account solventa-app-sa \
-              --role-arn "$SECRETS_CSI_ROLE_ARN"
+              --namespace external-secrets \
+              --service-account external-secrets-sa \
+              --role-arn "$ESO_ROLE_ARN"
           fi
 
       - name: Configure Amazon CloudWatch Observability Pod Identity
@@ -169,91 +169,88 @@ jobs:
               --role-arn "$CLOUDWATCH_ROLE_ARN"
           fi
 
-      - name: Install AWS Load Balancer Controller with Helm
+      # - name: Install AWS Load Balancer Controller with Helm
+      #   shell: bash
+      #   run: |
+      #     set -euo pipefail
+
+      #     aws eks update-kubeconfig --name "$CLUSTER_NAME"
+
+      #     # kubectl logs -f -n kube-system deployment/aws-load-balancer-controller -c aws-load-balancer-controller 
+
+      #     helm uninstall aws-load-balancer-controller --namespace kube-system || true
+      #     kubectl delete serviceaccount aws-load-balancer-controller --namespace kube-system --ignore-not-found=true
+
+      #     helm repo add eks https://aws.github.io/eks-charts
+      #     helm repo update
+
+      #     VPC_ID=$(aws ec2 describe-vpcs \
+      #       --filters "Name=tag:Name,Values=${VPC_NAME}" \
+      #       --query "Vpcs[0].VpcId" \
+      #       --output text)
+
+      #     if [ -z "$VPC_ID" ] || [ "$VPC_ID" == "None" ]; then
+      #         echo "Error: VPC with name '${VPC_NAME}' not found."
+      #         exit 1
+      #     fi
+
+      #     helm upgrade --install aws-load-balancer-controller eks/aws-load-balancer-controller \
+      #       --namespace kube-system \
+      #       --create-namespace \
+      #       --set clusterName="$CLUSTER_NAME" \
+      #       --set enablePodIdentity=true \
+      #       --set serviceAccount.create=true \
+      #       --set serviceAccount.name=aws-load-balancer-controller \
+      #       --set region=$AWS_REGION \
+      #       --set vpcId=$VPC_ID \
+      #       --wait \
+      #       --timeout 10m
+
+      - name: Install External Secrets Operator with Helm
         shell: bash
         run: |
           set -euo pipefail
 
           aws eks update-kubeconfig --name "$CLUSTER_NAME"
 
-          # kubectl logs -f -n kube-system deployment/aws-load-balancer-controller -c aws-load-balancer-controller 
+          # helm uninstall external-secrets --namespace external-secrets || true
+          # kubectl delete serviceaccount external-secrets-sa--namespace external-secrets --ignore-not-found=true
 
-          helm uninstall aws-load-balancer-controller --namespace kube-system || true
-          kubectl delete serviceaccount aws-load-balancer-controller --namespace kube-system --ignore-not-found=true
-
-          helm repo add eks https://aws.github.io/eks-charts
+          helm repo add external-secrets https://charts.external-secrets.io
           helm repo update
 
-          VPC_ID=$(aws ec2 describe-vpcs \
-            --filters "Name=tag:Name,Values=${VPC_NAME}" \
-            --query "Vpcs[0].VpcId" \
-            --output text)
-
-          if [ -z "$VPC_ID" ] || [ "$VPC_ID" == "None" ]; then
-              echo "Error: VPC with name '${VPC_NAME}' not found."
-              exit 1
-          fi
-
-          helm upgrade --install aws-load-balancer-controller eks/aws-load-balancer-controller \
-            --namespace kube-system \
+          helm upgrade --install external-secrets external-secrets/external-secrets \
+            --namespace external-secrets \
             --create-namespace \
-            --set clusterName="$CLUSTER_NAME" \
-            --set enablePodIdentity=true \
+            --set installCRDs=true \
             --set serviceAccount.create=true \
-            --set serviceAccount.name=aws-load-balancer-controller \
-            --set region=$AWS_REGION \
-            --set vpcId=$VPC_ID \
+            --set serviceAccount.name=external-secrets-sa \
             --wait \
             --timeout 10m
 
-      - name: Install AWS Secrets Store CSI Driver Add-on
-        shell: bash
-        run: |
-          set -euo pipefail
+      # - name: Install Amazon CloudWatch Observability Add-on
+      #   shell: bash
+      #   run: |
+      #     set -euo pipefail
 
-          # Check if the addon is already installed and ACTIVE
-          ADDON_STATUS=$(aws eks describe-addon \
-            --cluster-name "$CLUSTER_NAME" \
-            --addon-name aws-secrets-store-csi-driver-provider \
-            --query "addon.status" \
-            --output text 2>/dev/null || echo "NOT_FOUND")
+      #     # Check if the addon is already installed and ACTIVE
+      #     ADDON_STATUS=$(aws eks describe-addon \
+      #       --cluster-name "$CLUSTER_NAME" \
+      #       --addon-name amazon-cloudwatch-observability \
+      #       --query "addon.status" \
+      #       --output text 2>/dev/null || echo "NOT_FOUND")
 
-          if [ "$ADDON_STATUS" = "ACTIVE" ]; then
-            echo "Addon aws-secrets-store-csi-driver is already installed and ACTIVE. Skipping creation."
-          else
-            aws eks create-addon \
-              --cluster-name "$CLUSTER_NAME" \
-              --addon-name aws-secrets-store-csi-driver-provider \
-              --configuration-values '{"secrets-store-csi-driver": {"syncSecret":{"enabled":"true"}, "tokenRequests": [{"audience": "sts.amazonaws.com"}, {"audience": "pods.eks.amazonaws.com"}]}}' \
-              --resolve-conflicts OVERWRITE
-            aws eks wait addon-active \
-              --cluster-name "$CLUSTER_NAME" \
-              --addon-name aws-secrets-store-csi-driver-provider
-          fi
-
-      - name: Install Amazon CloudWatch Observability Add-on
-        shell: bash
-        run: |
-          set -euo pipefail
-
-          # Check if the addon is already installed and ACTIVE
-          ADDON_STATUS=$(aws eks describe-addon \
-            --cluster-name "$CLUSTER_NAME" \
-            --addon-name amazon-cloudwatch-observability \
-            --query "addon.status" \
-            --output text 2>/dev/null || echo "NOT_FOUND")
-
-          if [ "$ADDON_STATUS" = "ACTIVE" ]; then
-            echo "Addon amazon-cloudwatch-observability is already installed and ACTIVE. Skipping creation."
-          else
-            aws eks create-addon \
-              --cluster-name "$CLUSTER_NAME" \
-              --addon-name amazon-cloudwatch-observability \
-              --resolve-conflicts OVERWRITE
-            aws eks wait addon-active \
-              --cluster-name "$CLUSTER_NAME" \
-              --addon-name amazon-cloudwatch-observability
-          fi
+      #     if [ "$ADDON_STATUS" = "ACTIVE" ]; then
+      #       echo "Addon amazon-cloudwatch-observability is already installed and ACTIVE. Skipping creation."
+      #     else
+      #       aws eks create-addon \
+      #         --cluster-name "$CLUSTER_NAME" \
+      #         --addon-name amazon-cloudwatch-observability \
+      #         --resolve-conflicts OVERWRITE
+      #       aws eks wait addon-active \
+      #         --cluster-name "$CLUSTER_NAME" \
+      #         --addon-name amazon-cloudwatch-observability
+      #     fi
 
       - name: Verify installed components
         shell: bash
@@ -264,7 +261,7 @@ jobs:
             --output wide
           kubectl get pods -A -l app.kubernetes.io/name=aws-load-balancer-controller \
             --output wide
-          kubectl get pods -A -l app.kubernetes.io/name=aws-secrets-store-csi-driver-provider \
+          kubectl get pods -A -l app.kubernetes.io/name=external-secrets \
             --output wide
           kubectl get pods -A -l app.kubernetes.io/name=amazon-cloudwatch-observability \
             --output wide
@@ -272,11 +269,6 @@ jobs:
           aws eks describe-addon \
             --cluster-name "$CLUSTER_NAME" \
             --addon-name eks-pod-identity-agent \
-            --query 'addon.{name:name,status:status,version:version}' \
-            --output table
-          aws eks describe-addon \
-            --cluster-name "$CLUSTER_NAME" \
-            --addon-name aws-secrets-store-csi-driver-provider \
             --query 'addon.{name:name,status:status,version:version}' \
             --output table
           aws eks describe-addon \
