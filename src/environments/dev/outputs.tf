@@ -38,15 +38,25 @@ output "eks_cluster_endpoint" {
   value       = module.eks.cluster_endpoint
 }
 
-# output "rds_cluster_endpoint" {
-#   description = "Endpoint of the RDS PostgreSQL cluster."
-#   value       = module.rds.cluster_endpoint
-# }
+output "rds_cluster_endpoint" {
+  description = "Endpoint of the RDS PostgreSQL cluster."
+  value       = module.rds.cluster_endpoint
+}
 
-# output "assets_bucket_name" {
-#   description = "Name of the environment assets bucket."
-#   value       = module.storage_bucket.bucket_name
-# }
+output "redis_endpoint" {
+  description = "Primary endpoint of the Redis replication group."
+  value       = module.redis.primary_endpoint_address
+}
+
+output "cloudfront_endpoint" {
+  description = "Domain name of the CloudFront distribution."
+  value       = module.cloudfront.distribution_domain_name
+}
+
+output "assets_bucket_name" {
+  description = "Name of the environment assets bucket."
+  value       = module.storage_bucket.bucket_name
+}
 
 output "assets_bucket_arn" {
   description = "ARN of the environment assets bucket."

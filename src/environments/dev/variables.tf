@@ -347,6 +347,11 @@ variable "storage_bucket_name" {
   type        = string
 }
 
+variable "frontend_bucket_name" {
+  description = "Globally unique name of the private development frontend bucket."
+  type        = string
+}
+
 variable "data_kms_key_name" {
   description = "Name of the KMS key for application data."
   type        = string

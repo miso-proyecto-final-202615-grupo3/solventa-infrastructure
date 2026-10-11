@@ -98,7 +98,8 @@ redis_apply_immediately          = false
 redis_at_rest_encryption_enabled = true
 redis_transit_encryption_enabled = true
 
-storage_bucket_name = "solventa-dev-storage-6fba06c21ab7"
+storage_bucket_name  = "solventa-dev-storage-6fba06c21ab7"
+frontend_bucket_name = "solventa-dev-frontend-6fba06c21ab7"
 
 cognito_allowed_first_auth_factors           = ["PASSWORD", "EMAIL_OTP"]
 cognito_client_names                         = ["solventa-dev-web", "solventa-dev-mobile"]

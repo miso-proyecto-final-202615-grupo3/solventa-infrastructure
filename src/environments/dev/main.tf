@@ -134,6 +134,13 @@ module "storage_bucket" {
   tags        = var.tags
 }
 
+module "cloudfront" {
+  source = "../../modules/cloudfront"
+
+  bucket_name = var.frontend_bucket_name
+  tags        = var.tags
+}
+
 module "cognito" {
   source = "../../modules/cognito"
 
