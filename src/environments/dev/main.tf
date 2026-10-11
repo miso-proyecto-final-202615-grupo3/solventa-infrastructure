@@ -93,7 +93,7 @@ module "rds" {
   vpc_id                       = module.vpc.vpc_id
   vpc_cidr                     = module.vpc.vpc_cidr
   subnet_group_name            = "${var.project}-${var.environment}-rds-subnets"
-  subnet_ids                   = module.vpc.public_subnet_cidrs
+  subnet_ids                   = module.vpc.public_subnet_ids
   instance_count               = var.rds_instance_count
   instance_class               = var.rds_instance_class
   skip_final_snapshot          = var.rds_skip_final_snapshot
