@@ -15,7 +15,7 @@ module "vpc" {
   tags                          = var.tags
 }
 
-# module "application_load_balancer" {
+# module "load_balancer" {
 #   source = "../../modules/alb"
 
 #   load_balancer_name               = "${var.project}-${var.environment}-alb"
@@ -105,6 +105,26 @@ module "rds" {
     seconds_until_auto_pause = var.rds_serverlessv2_seconds_until_auto_pause
   }
   tags = var.tags
+}
+
+module "redis" {
+  source = "../../modules/redis"
+
+  replication_group_id       = "${var.project}-${var.environment}-redis"
+  description                = "Redis cache for ${var.project} ${var.environment}"
+  engine_version             = var.redis_engine_version
+  node_type                  = var.redis_node_type
+  port                       = var.redis_port
+  num_cache_clusters         = var.redis_num_cache_clusters
+  snapshot_retention_limit   = var.redis_snapshot_retention_limit
+  apply_immediately          = var.redis_apply_immediately
+  at_rest_encryption_enabled = var.redis_at_rest_encryption_enabled
+  transit_encryption_enabled = var.redis_transit_encryption_enabled
+  auth_token                 = var.redis_auth_token
+  vpc_id                     = module.vpc.vpc_id
+  allowed_cidr_blocks        = var.private_database_subnet_cidrs
+  subnet_ids                 = module.vpc.private_compute_subnet_ids
+  tags                       = var.tags
 }
 
 module "storage_bucket" {

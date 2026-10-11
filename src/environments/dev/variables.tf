@@ -296,6 +296,52 @@ variable "rds_serverlessv2_seconds_until_auto_pause" {
   type        = number
 }
 
+variable "redis_engine_version" {
+  description = "Redis engine version for ElastiCache."
+  type        = string
+}
+
+variable "redis_node_type" {
+  description = "ElastiCache node type used by Redis."
+  type        = string
+}
+
+variable "redis_port" {
+  description = "Port used by Redis."
+  type        = number
+}
+
+variable "redis_num_cache_clusters" {
+  description = "Number of cache nodes in the Redis replication group."
+  type        = number
+}
+
+variable "redis_snapshot_retention_limit" {
+  description = "Number of days to retain automatic Redis snapshots."
+  type        = number
+}
+
+variable "redis_apply_immediately" {
+  description = "Applies Redis changes immediately instead of waiting for the maintenance window."
+  type        = bool
+}
+
+variable "redis_at_rest_encryption_enabled" {
+  description = "Enables encryption at rest for Redis."
+  type        = bool
+}
+
+variable "redis_transit_encryption_enabled" {
+  description = "Enables TLS encryption for Redis connections."
+  type        = bool
+}
+
+variable "redis_auth_token" {
+  description = "Authentication token required by Redis clients."
+  type        = string
+  sensitive   = true
+}
+
 variable "storage_bucket_name" {
   description = "Globally unique name of the development assets bucket."
   type        = string
