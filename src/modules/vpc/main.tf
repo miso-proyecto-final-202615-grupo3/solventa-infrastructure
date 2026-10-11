@@ -25,8 +25,9 @@ resource "aws_subnet" "public" {
   map_public_ip_on_launch = true
 
   tags = merge(var.tags, {
-    Name = "${var.subnet_name_prefix}-public-${count.index + 1}"
-    Type = "public"
+    Name                     = "${var.subnet_name_prefix}-public-${count.index + 1}"
+    Type                     = "public"
+    "kubernetes.io/role/elb" = "1"
   })
 }
 
