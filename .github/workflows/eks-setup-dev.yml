@@ -178,8 +178,8 @@ jobs:
 
       #     # kubectl logs -f -n kube-system deployment/aws-load-balancer-controller -c aws-load-balancer-controller
 
-      #     helm uninstall aws-load-balancer-controller --namespace kube-system || true
-      #     kubectl delete serviceaccount aws-load-balancer-controller --namespace kube-system --ignore-not-found=true
+      #     # helm uninstall aws-load-balancer-controller --namespace kube-system || true
+      #     # kubectl delete serviceaccount aws-load-balancer-controller --namespace kube-system --ignore-not-found=true
 
       #     helm repo add eks https://aws.github.io/eks-charts
       #     helm repo update
@@ -206,27 +206,27 @@ jobs:
       #       --wait \
       #       --timeout 10m
 
-      - name: Install External Secrets Operator with Helm
-        shell: bash
-        run: |
-          set -euo pipefail
+      # - name: Install External Secrets Operator with Helm
+      #   shell: bash
+      #   run: |
+      #     set -euo pipefail
 
-          aws eks update-kubeconfig --name "$CLUSTER_NAME"
+      #     aws eks update-kubeconfig --name "$CLUSTER_NAME"
 
-          # helm uninstall external-secrets --namespace external-secrets || true
-          # kubectl delete serviceaccount external-secrets-sa--namespace external-secrets --ignore-not-found=true
+      #     # helm uninstall external-secrets --namespace external-secrets || true
+      #     # kubectl delete serviceaccount external-secrets-sa--namespace external-secrets --ignore-not-found=true
 
-          helm repo add external-secrets https://charts.external-secrets.io
-          helm repo update
+      #     helm repo add external-secrets https://charts.external-secrets.io
+      #     helm repo update
 
-          helm upgrade --install external-secrets external-secrets/external-secrets \
-            --namespace external-secrets \
-            --create-namespace \
-            --set installCRDs=true \
-            --set serviceAccount.create=true \
-            --set serviceAccount.name=external-secrets-sa \
-            --wait \
-            --timeout 10m
+      #     helm upgrade --install external-secrets external-secrets/external-secrets \
+      #       --namespace external-secrets \
+      #       --create-namespace \
+      #       --set installCRDs=true \
+      #       --set serviceAccount.create=true \
+      #       --set serviceAccount.name=external-secrets-sa \
+      #       --wait \
+      #       --timeout 10m
 
       # - name: Install Amazon CloudWatch Observability Add-on
       #   shell: bash
