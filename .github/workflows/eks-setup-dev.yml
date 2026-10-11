@@ -240,6 +240,10 @@ jobs:
         run: |
           set -euo pipefail
 
+          aws eks describe-addon \
+            --cluster-name "$CLUSTER_NAME" \
+            --addon-name amazon-cloudwatch-observability
+
           # Check if the addon is already installed and ACTIVE
           ADDON_STATUS=$(aws eks describe-addon \
             --cluster-name "$CLUSTER_NAME" \
