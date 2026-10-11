@@ -31,7 +31,7 @@ resource "aws_elasticache_subnet_group" "this" {
 resource "aws_elasticache_replication_group" "this" {
   replication_group_id       = var.replication_group_id
   description                = var.description
-  engine                     = "redis"
+  engine                     = "valkey"
   engine_version             = var.engine_version
   node_type                  = var.node_type
   port                       = var.port
