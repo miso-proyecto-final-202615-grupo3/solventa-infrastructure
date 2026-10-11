@@ -218,9 +218,9 @@ jobs:
             --query "addon.status" \
             --output text 2>/dev/null || echo "NOT_FOUND")
 
-          aws eks delete-addon \
-            --cluster-name "$CLUSTER_NAME" \
-            --addon-name aws-secrets-store-csi-driver-provider
+          # aws eks delete-addon \
+          #   --cluster-name "$CLUSTER_NAME" \
+          #   --addon-name aws-secrets-store-csi-driver-provider
 
           if [ "$ADDON_STATUS" = "ACTIVE" ]; then
             echo "Addon aws-secrets-store-csi-driver is already installed and ACTIVE. Skipping creation."
