@@ -1,29 +1,43 @@
-name: "DEV EKS Cluster - Setup"
+name: "EKS Cluster - Setup"
 
 on:
   workflow_dispatch:
+    inputs:
+      target_env:
+        description: "Select the environment"
+        required: true
+        type: choice
+        options:
+          - dev
+          - qa
+          - prod
+        default: "dev"
 
 permissions:
   contents: read
   id-token: write
 
 concurrency:
-  group: eks-setup-dev-${{ github.run_id }}
+  group: eks-setup-${{ inputs.target_env }}
   cancel-in-progress: false
 
 env:
   AWS_REGION: ${{ secrets.AWS_REGION }}
-  CLUSTER_NAME: solventa-dev-eks
-  VPC_NAME: solventa-dev-vpc
+  CLUSTER_NAME: solventa-${{ inputs.target_env }}-eks
+  VPC_NAME: solventa-${{ inputs.target_env }}-vpc
   LBC_ROLE_NAME: AWSLoadBalancerControllerIAMRole
   ESO_ROLE_NAME: ExternalOperatorIAMRole
   CLOUDWATCH_ROLE_NAME: CloudWatchObservabilityIAMRole
 
 jobs:
-  eks-setup-dev:
+  eks-setup:
+    name: Setup EKS in ${{ inputs.target_env }}
     runs-on: ubuntu-latest
-    environment: dev
+    environment: ${{ inputs.target_env }}
     timeout-minutes: 60
+
+    env:
+      DEPLOYMENT_ENV: ${{ inputs.target_env }}
 
     steps:
       - name: Check out repository

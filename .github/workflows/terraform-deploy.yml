@@ -1,17 +1,35 @@
-name: "DEV Infra - Terraform Deploy"
+name: "Infra - Terraform Deploy"
 
 on:
   workflow_dispatch:
+    inputs:
+      target_env:
+        description: "Select the environment"
+        required: true
+        type: choice
+        options:
+          - dev
+          - qa
+          - prod
+        default: "dev"
 
 permissions:
   id-token: write
   contents: read
 
+concurrency:
+  group: terraform-deploy-${{ inputs.target_env }}
+  cancel-in-progress: false
+
 jobs:
-  terraform-deploy-dev:
+  terraform-deploy:
+    name: Deploy infra to ${{ inputs.target_env }}
     runs-on: ubuntu-latest
-    environment: dev
+    environment: ${{ inputs.target_env }}
     timeout-minutes: 60
+
+    env:
+      DEPLOYMENT_ENV: ${{ inputs.target_env }}
 
     steps:
       - name: Checkout code
@@ -30,7 +48,7 @@ jobs:
 
       - name: Terraform Init
         run: |
-          terraform -chdir=src/environments/dev init \
+          terraform -chdir=src/environments/$DEPLOYMENT_ENV init \
             -backend-config="bucket=${{ secrets.BACKEND_BUCKET }}" \
             -backend-config="key=${{ secrets.BACKEND_KEY }}" \
             -backend-config="region=${{ secrets.AWS_REGION }}" \
@@ -38,7 +56,7 @@ jobs:
             -backend-config="encrypt=true"
 
       - name: Terraform Validate
-        run: terraform -chdir=src/environments/dev validate
+        run: terraform -chdir=src/environments/$DEPLOYMENT_ENV validate
 
       - name: Terraform Apply
         env:
@@ -49,7 +67,7 @@ jobs:
           TF_VAR_eks_cluster_admin_principal_pipeline: ${{ secrets.AWS_ROLE_ARN }}
           TF_VAR_eks_cluster_admin_principal_group: ${{ secrets.EKS_CLUSTER_ADMIN_USER_ARN }}
         run: |
-          terraform -chdir=src/environments/dev apply \
-            -var-file="../../../config/dev/dev.tfvars" \
+          terraform -chdir=src/environments/$DEPLOYMENT_ENV apply \
+            -var-file="../../../config/$DEPLOYMENT_ENV/$DEPLOYMENT_ENV.tfvars" \
             -input=false \
             -auto-approve
