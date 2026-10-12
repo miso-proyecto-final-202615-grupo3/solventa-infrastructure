@@ -1,47 +1,47 @@
-output "vpc_id" {
-  description = "ID of the development VPC."
-  value       = module.vpc.vpc_id
-}
+# output "vpc_id" {
+#   description = "ID of the development VPC."
+#   value       = module.vpc.vpc_id
+# }
 
-output "vpc_cidr" {
-  description = "CIDR block of the development VPC."
-  value       = module.vpc.vpc_cidr
-}
+# output "vpc_cidr" {
+#   description = "CIDR block of the development VPC."
+#   value       = module.vpc.vpc_cidr
+# }
 
-output "public_subnet_ids" {
-  description = "IDs of the public subnets."
-  value       = module.vpc.public_subnet_ids
-}
+# output "public_subnet_ids" {
+#   description = "IDs of the public subnets."
+#   value       = module.vpc.public_subnet_ids
+# }
 
-output "private_compute_subnet_ids" {
-  description = "IDs of the private compute subnets."
-  value       = module.vpc.private_compute_subnet_ids
-}
+# output "private_compute_subnet_ids" {
+#   description = "IDs of the private compute subnets."
+#   value       = module.vpc.private_compute_subnet_ids
+# }
 
-output "private_database_subnet_ids" {
-  description = "IDs of the private database subnets."
-  value       = module.vpc.private_database_subnet_ids
-}
+# output "private_database_subnet_ids" {
+#   description = "IDs of the private database subnets."
+#   value       = module.vpc.private_database_subnet_ids
+# }
 
 # output "load_balancer_arn" {
 #   description = "ARN of the application load balancer."
 #   value       = module.application_load_balancer.load_balancer_arn
 # }
 
-output "eks_cluster_id" {
-  description = "ID of the development EKS cluster."
-  value       = module.eks.cluster_id
-}
+# output "eks_cluster_id" {
+#   description = "ID of the development EKS cluster."
+#   value       = module.eks.cluster_id
+# }
 
-output "eks_cluster_endpoint" {
-  description = "Endpoint of the development EKS cluster."
-  value       = module.eks.cluster_endpoint
-}
+# output "eks_cluster_endpoint" {
+#   description = "Endpoint of the development EKS cluster."
+#   value       = module.eks.cluster_endpoint
+# }
 
-output "rds_cluster_endpoint" {
-  description = "Endpoint of the RDS PostgreSQL cluster."
-  value       = module.rds.cluster_endpoint
-}
+# output "rds_cluster_endpoint" {
+#   description = "Endpoint of the RDS PostgreSQL cluster."
+#   value       = module.rds.cluster_endpoint
+# }
 
 # output "redis_endpoint" {
 #   description = "Primary endpoint of the Redis replication group."
@@ -53,13 +53,13 @@ output "cloudfront_endpoint" {
   value       = module.cloudfront.distribution_domain_name
 }
 
-output "assets_bucket_name" {
-  description = "Name of the environment assets bucket."
+output "storage_bucket_name" {
+  description = "Name of the environment storage bucket."
   value       = module.storage_bucket.bucket_name
 }
 
-output "assets_bucket_arn" {
-  description = "ARN of the environment assets bucket."
+output "storage_bucket_arn" {
+  description = "ARN of the environment storage bucket."
   value       = module.storage_bucket.bucket_arn
 }
 
