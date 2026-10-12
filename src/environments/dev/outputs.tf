@@ -43,10 +43,10 @@ output "rds_cluster_endpoint" {
   value       = module.rds.cluster_endpoint
 }
 
-output "redis_endpoint" {
-  description = "Primary endpoint of the Redis replication group."
-  value       = module.redis.primary_endpoint_address
-}
+# output "redis_endpoint" {
+#   description = "Primary endpoint of the Redis replication group."
+#   value       = module.redis.primary_endpoint_address
+# }
 
 output "cloudfront_endpoint" {
   description = "Domain name of the CloudFront distribution."

@@ -107,25 +107,25 @@ module "rds" {
   tags = var.tags
 }
 
-module "redis" {
-  source = "../../modules/redis"
+# module "redis" {
+#   source = "../../modules/redis"
 
-  replication_group_id       = "${var.project}-${var.environment}-redis"
-  description                = "Redis cache for ${var.project} ${var.environment}"
-  engine_version             = var.redis_engine_version
-  node_type                  = var.redis_node_type
-  port                       = var.redis_port
-  num_cache_clusters         = var.redis_num_cache_clusters
-  snapshot_retention_limit   = var.redis_snapshot_retention_limit
-  apply_immediately          = var.redis_apply_immediately
-  at_rest_encryption_enabled = var.redis_at_rest_encryption_enabled
-  transit_encryption_enabled = var.redis_transit_encryption_enabled
-  auth_token                 = var.redis_auth_token
-  vpc_id                     = module.vpc.vpc_id
-  allowed_cidr_blocks        = [var.vpc_cidr]
-  subnet_ids                 = module.vpc.private_database_subnet_ids
-  tags                       = var.tags
-}
+#   replication_group_id       = "${var.project}-${var.environment}-redis"
+#   description                = "Redis cache for ${var.project} ${var.environment}"
+#   engine_version             = var.redis_engine_version
+#   node_type                  = var.redis_node_type
+#   port                       = var.redis_port
+#   num_cache_clusters         = var.redis_num_cache_clusters
+#   snapshot_retention_limit   = var.redis_snapshot_retention_limit
+#   apply_immediately          = var.redis_apply_immediately
+#   at_rest_encryption_enabled = var.redis_at_rest_encryption_enabled
+#   transit_encryption_enabled = var.redis_transit_encryption_enabled
+#   auth_token                 = var.redis_auth_token
+#   vpc_id                     = module.vpc.vpc_id
+#   allowed_cidr_blocks        = [var.vpc_cidr]
+#   subnet_ids                 = module.vpc.private_database_subnet_ids
+#   tags                       = var.tags
+# }
 
 module "storage_bucket" {
   source = "../../modules/s3_bucket"
