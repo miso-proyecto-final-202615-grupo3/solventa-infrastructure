@@ -90,7 +90,7 @@ rds_serverlessv2_seconds_until_auto_pause = 3600
 
 redis_engine_version             = "9.1"
 redis_node_type                  = "cache.t3.micro"
-redis_port                       = 6379
+redis_port                       = 6380
 redis_num_cache_clusters         = 1
 redis_snapshot_retention_limit   = 0
 redis_apply_immediately          = false
