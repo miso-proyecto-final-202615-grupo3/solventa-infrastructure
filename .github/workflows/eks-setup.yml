@@ -375,7 +375,7 @@ jobs:
             --output table
           aws eks describe-addon \
             --cluster-name "$CLUSTER_NAME" \
-            --addon-name otel \
+            --addon-name adot \
             --query 'addon.{name:name,status:status,version:version}' \
             --output table
           aws eks describe-addon \
