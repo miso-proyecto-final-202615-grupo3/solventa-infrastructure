@@ -248,6 +248,27 @@ jobs:
               --addon-name amazon-cloudwatch-observability
           fi
 
+      - name: Install cert-manager with Helm
+        shell: bash
+        run: |
+          set -euo pipefail
+
+          aws eks update-kubeconfig --name "$CLUSTER_NAME"
+
+          # helm uninstall cert-manager --namespace cert-manager || true
+          # kubectl delete serviceaccount cert-manager --namespace cert-manager --ignore-not-found=true
+
+          helm repo add jetstack https://charts.jetstack.io
+          helm repo update
+
+          helm upgrade --install cert-manager jetstack/cert-manager \
+            --namespace cert-manager \
+            --create-namespace \
+            --version v1.21.2 \
+            --set crds.enabled=true \
+            --wait \
+            --timeout 10m
+
       - name: Install AWS Distro for OpenTelemetry Add-on
         shell: bash
         run: |
