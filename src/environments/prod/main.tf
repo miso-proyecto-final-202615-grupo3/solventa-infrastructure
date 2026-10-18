@@ -1,0 +1,205 @@
+module "vpc" {
+  source = "../../modules/vpc"
+
+  vpc_name                      = "${var.project}-${var.environment}-vpc"
+  vpc_cidr                      = var.vpc_cidr
+  public_subnet_cidrs           = var.public_subnet_cidrs
+  private_compute_subnet_cidrs  = var.private_compute_subnet_cidrs
+  private_database_subnet_cidrs = var.private_database_subnet_cidrs
+  internet_gateway_name         = "${var.project}-${var.environment}-igw"
+  nat_gateway_name              = "${var.project}-${var.environment}-nat"
+  subnet_name_prefix            = "${var.project}-${var.environment}"
+  public_route_table_name       = "${var.project}-${var.environment}-public-rt"
+  private_route_table_name      = "${var.project}-${var.environment}-private-rt"
+  availability_zones            = var.availability_zones
+  tags                          = var.tags
+}
+
+# module "load_balancer" {
+#   source = "../../modules/alb"
+
+#   load_balancer_name               = "${var.project}-${var.environment}-alb"
+#   target_group_name                = "${var.project}-${var.environment}-tg"
+#   vpc_id                           = module.vpc.vpc_id
+#   subnet_ids                       = module.vpc.public_subnet_ids
+#   target_port                      = var.alb_target_port
+#   target_protocol                  = var.alb_target_protocol
+#   certificate_arn                  = var.alb_certificate_arn
+#   ssl_policy                       = var.alb_ssl_policy
+#   idle_timeout                     = var.alb_idle_timeout
+#   deletion_protection              = var.alb_deletion_protection
+#   health_check_healthy_threshold   = var.alb_health_check_healthy_threshold
+#   health_check_interval            = var.alb_health_check_interval
+#   health_check_path                = var.alb_health_check_path
+#   health_check_timeout             = var.alb_health_check_timeout
+#   health_check_unhealthy_threshold = var.alb_health_check_unhealthy_threshold
+#   tags                             = merge(var.tags, { "elbv2.k8s.aws/cluster" = "${var.project}-${var.environment}-eks" })
+# }
+
+module "eks" {
+  source = "../../modules/eks"
+
+  cluster_name                         = "${var.project}-${var.environment}-eks"
+  cluster_version                      = var.eks_cluster_version
+  vpc_id                               = module.vpc.vpc_id
+  vpc_cidr                             = module.vpc.vpc_cidr
+  private_subnet_ids                   = module.vpc.private_compute_subnet_ids
+  enable_public_endpoint               = var.eks_enable_public_endpoint
+  public_endpoint_cidrs                = var.eks_public_endpoint_cidrs
+  cluster_log_types                    = var.eks_cluster_log_types
+  cluster_admin_principal_arn_pipeline = var.eks_cluster_admin_principal_pipeline
+  cluster_admin_principal_arn_group    = var.eks_cluster_admin_principal_group
+  node_group_name                      = "${var.project}-${var.environment}-workers"
+  instance_types                       = var.eks_instance_types
+  desired_size                         = var.eks_desired_size
+  min_size                             = var.eks_min_size
+  max_size                             = var.eks_max_size
+  max_unavailable                      = var.eks_max_unavailable
+  capacity_type                        = var.eks_capacity_type
+  disk_size                            = var.eks_disk_size
+  ami_type                             = var.eks_ami_type
+  labels                               = var.eks_labels
+  tags                                 = var.tags
+}
+
+# module "ecr" {
+#   source = "../../modules/ecr"
+
+#   repository_names     = var.ecr_repository_names
+#   image_tag_mutability = var.ecr_image_tag_mutability
+#   scan_on_push         = var.ecr_scan_on_push
+#   encryption_type      = var.ecr_encryption_type
+#   keep_latest_images   = var.ecr_keep_latest_images
+#   tags                 = var.tags
+# }
+
+# module "rds" {
+#   source = "../../modules/rds"
+
+#   cluster_identifier           = "${var.project}-${var.environment}-rds"
+#   engine_version               = var.rds_engine_version
+#   database_name                = var.rds_database_name
+#   master_username              = var.rds_master_username
+#   master_password              = var.rds_master_password
+#   port                         = var.rds_port
+#   preferred_backup_window      = var.rds_preferred_backup_window
+#   backup_retention_period      = var.rds_backup_retention_period
+#   preferred_maintenance_window = var.rds_preferred_maintenance_window
+#   allocated_storage            = var.rds_allocated_storage
+#   max_allocated_storage        = var.rds_max_allocated_storage
+#   storage_encrypted            = var.rds_storage_encrypted
+#   parameter_group_name         = "${var.project}-${var.environment}-rds-pg"
+#   parameter_group_family       = var.rds_parameter_group_family
+#   vpc_id                       = module.vpc.vpc_id
+#   vpc_cidr                     = module.vpc.vpc_cidr
+#   subnet_group_name            = "${var.project}-${var.environment}-rds-subnets"
+#   subnet_ids                   = module.vpc.public_subnet_ids
+#   instance_count               = var.rds_instance_count
+#   instance_class               = var.rds_instance_class
+#   skip_final_snapshot          = var.rds_skip_final_snapshot
+#   deletion_protection          = var.rds_deletion_protection
+#   apply_immediately            = var.rds_apply_immediately
+#   serverlessv2_scaling_configuration = {
+#     max_capacity             = var.rds_serverlessv2_max_capacity
+#     min_capacity             = var.rds_serverlessv2_min_capacity
+#     seconds_until_auto_pause = var.rds_serverlessv2_seconds_until_auto_pause
+#   }
+#   tags = var.tags
+# }
+
+# module "redis" {
+#   source = "../../modules/redis"
+
+#   replication_group_id       = "${var.project}-${var.environment}-redis"
+#   description                = "Redis cache for ${var.project} ${var.environment}"
+#   engine_version             = var.redis_engine_version
+#   node_type                  = var.redis_node_type
+#   port                       = var.redis_port
+#   num_cache_clusters         = var.redis_num_cache_clusters
+#   snapshot_retention_limit   = var.redis_snapshot_retention_limit
+#   apply_immediately          = var.redis_apply_immediately
+#   at_rest_encryption_enabled = var.redis_at_rest_encryption_enabled
+#   transit_encryption_enabled = var.redis_transit_encryption_enabled
+#   auth_token                 = var.redis_auth_token
+#   vpc_id                     = module.vpc.vpc_id
+#   allowed_cidr_blocks        = [var.vpc_cidr]
+#   subnet_ids                 = module.vpc.private_database_subnet_ids
+#   tags                       = var.tags
+# }
+
+module "storage_bucket" {
+  source = "../../modules/s3_bucket"
+
+  bucket_name = var.storage_bucket_name
+  tags        = var.tags
+}
+
+module "cloudfront" {
+  source = "../../modules/cloudfront"
+
+  bucket_name = var.frontend_bucket_name
+  tags        = var.tags
+}
+
+module "cognito" {
+  source = "../../modules/cognito"
+
+  user_pool_name                       = "${var.project}-${var.environment}-cognito-customers"
+  client_names                         = var.cognito_client_names
+  allowed_oauth_scopes                 = var.cognito_allowed_oauth_scopes
+  allowed_oauth_flows_user_pool_client = var.cognito_allowed_oauth_flows_user_pool_client
+  allowed_oauth_flows                  = var.cognito_allowed_oauth_flows
+  allowed_first_auth_factors           = var.cognito_allowed_first_auth_factors
+  explicit_auth_flows                  = var.cognito_explicit_auth_flows
+  generate_secret                      = var.cognito_generate_secret
+  callback_urls                        = var.cognito_callback_urls
+  logout_urls                          = var.cognito_logout_urls
+  tags                                 = var.tags
+}
+
+# module "api_gateway" {
+#   source = "../../modules/api_gateway"
+
+#   api_name                     = "${var.project}-${var.environment}-apigw"
+#   api_description              = "Solventa API Gateway for ${var.environment}"
+#   stage_name                   = var.api_stage_name
+#   integration_uri              = "http://${module.application_load_balancer.load_balancer_dns_name}"
+#   route_key                    = var.api_route_key
+#   access_log_retention_in_days = var.api_access_log_retention_in_days
+#   access_log_format            = var.api_access_log_format
+#   tags                         = var.tags
+# }
+
+# module "events_queue" {
+#   source = "../../modules/sqs"
+
+#   queue_name                 = "${var.project}-${var.environment}-events"
+#   visibility_timeout_seconds = var.sqs_visibility_timeout_seconds
+#   message_retention_seconds  = var.sqs_message_retention_seconds
+#   kms_master_key_id          = module.kms_key.key_id
+#   redrive_policy             = var.sqs_redrive_policy
+#   principal_services         = var.sqs_principal_services
+#   tags                       = var.tags
+# }
+
+# module "notifications_topic" {
+#   source = "../../modules/sns"
+
+#   topic_name         = "${var.project}-${var.environment}-notifications"
+#   kms_master_key_id  = module.kms_key.key_id
+#   endpoint_arns      = var.sns_endpoint_arns
+#   protocols          = var.sns_protocols
+#   principal_services = var.sns_principal_services
+#   tags               = var.tags
+# }
+
+module "kms_key_appdata" {
+  source = "../../modules/kms"
+
+  key_name                = var.data_kms_key_name
+  alias_name              = var.data_kms_key_alias_name
+  description             = var.data_kms_key_description
+  deletion_window_in_days = var.data_kms_key_deletion_window_in_days
+  enable_key_rotation     = var.data_kms_key_enable_key_rotation
+  tags                    = var.tags
+}

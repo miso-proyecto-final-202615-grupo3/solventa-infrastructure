@@ -56,14 +56,13 @@ eks_labels = {
 }
 
 ecr_repository_names = [
-  "solventa-identityprofiling-service",
+  "solventa-identity-service",
   "solventa-quotingengine-service",
   "solventa-insurancepolicies-service",
   "solventa-insuranceclaims-service",
   "solventa-payments-service",
-  "solventa-webbff-service",
-  "solventa-mobilebff-service",
-  "solventa-webapp"
+  "solventa-bff-web",
+  "solventa-bff-mobile"
 ]
 ecr_image_tag_mutability = "MUTABLE"
 ecr_scan_on_push         = true

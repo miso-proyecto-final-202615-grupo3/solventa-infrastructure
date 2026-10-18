@@ -1,19 +1,19 @@
-# module "vpc" {
-#   source = "../../modules/vpc"
+module "vpc" {
+  source = "../../modules/vpc"
 
-#   vpc_name                      = "${var.project}-${var.environment}-vpc"
-#   vpc_cidr                      = var.vpc_cidr
-#   public_subnet_cidrs           = var.public_subnet_cidrs
-#   private_compute_subnet_cidrs  = var.private_compute_subnet_cidrs
-#   private_database_subnet_cidrs = var.private_database_subnet_cidrs
-#   internet_gateway_name         = "${var.project}-${var.environment}-igw"
-#   nat_gateway_name              = "${var.project}-${var.environment}-nat"
-#   subnet_name_prefix            = "${var.project}-${var.environment}"
-#   public_route_table_name       = "${var.project}-${var.environment}-public-rt"
-#   private_route_table_name      = "${var.project}-${var.environment}-private-rt"
-#   availability_zones            = var.availability_zones
-#   tags                          = var.tags
-# }
+  vpc_name                      = "${var.project}-${var.environment}-vpc"
+  vpc_cidr                      = var.vpc_cidr
+  public_subnet_cidrs           = var.public_subnet_cidrs
+  private_compute_subnet_cidrs  = var.private_compute_subnet_cidrs
+  private_database_subnet_cidrs = var.private_database_subnet_cidrs
+  internet_gateway_name         = "${var.project}-${var.environment}-igw"
+  nat_gateway_name              = "${var.project}-${var.environment}-nat"
+  subnet_name_prefix            = "${var.project}-${var.environment}"
+  public_route_table_name       = "${var.project}-${var.environment}-public-rt"
+  private_route_table_name      = "${var.project}-${var.environment}-private-rt"
+  availability_zones            = var.availability_zones
+  tags                          = var.tags
+}
 
 # module "load_balancer" {
 #   source = "../../modules/alb"
@@ -36,42 +36,42 @@
 #   tags                             = merge(var.tags, { "elbv2.k8s.aws/cluster" = "${var.project}-${var.environment}-eks" })
 # }
 
-# module "eks" {
-#   source = "../../modules/eks"
+module "eks" {
+  source = "../../modules/eks"
 
-#   cluster_name                         = "${var.project}-${var.environment}-eks"
-#   cluster_version                      = var.eks_cluster_version
-#   vpc_id                               = module.vpc.vpc_id
-#   vpc_cidr                             = module.vpc.vpc_cidr
-#   private_subnet_ids                   = module.vpc.private_compute_subnet_ids
-#   enable_public_endpoint               = var.eks_enable_public_endpoint
-#   public_endpoint_cidrs                = var.eks_public_endpoint_cidrs
-#   cluster_log_types                    = var.eks_cluster_log_types
-#   cluster_admin_principal_arn_pipeline = var.eks_cluster_admin_principal_pipeline
-#   cluster_admin_principal_arn_group    = var.eks_cluster_admin_principal_group
-#   node_group_name                      = "${var.project}-${var.environment}-workers"
-#   instance_types                       = var.eks_instance_types
-#   desired_size                         = var.eks_desired_size
-#   min_size                             = var.eks_min_size
-#   max_size                             = var.eks_max_size
-#   max_unavailable                      = var.eks_max_unavailable
-#   capacity_type                        = var.eks_capacity_type
-#   disk_size                            = var.eks_disk_size
-#   ami_type                             = var.eks_ami_type
-#   labels                               = var.eks_labels
-#   tags                                 = var.tags
-# }
-
-module "ecr" {
-  source = "../../modules/ecr"
-
-  repository_names     = var.ecr_repository_names
-  image_tag_mutability = var.ecr_image_tag_mutability
-  scan_on_push         = var.ecr_scan_on_push
-  encryption_type      = var.ecr_encryption_type
-  keep_latest_images   = var.ecr_keep_latest_images
-  tags                 = var.tags
+  cluster_name                         = "${var.project}-${var.environment}-eks"
+  cluster_version                      = var.eks_cluster_version
+  vpc_id                               = module.vpc.vpc_id
+  vpc_cidr                             = module.vpc.vpc_cidr
+  private_subnet_ids                   = module.vpc.private_compute_subnet_ids
+  enable_public_endpoint               = var.eks_enable_public_endpoint
+  public_endpoint_cidrs                = var.eks_public_endpoint_cidrs
+  cluster_log_types                    = var.eks_cluster_log_types
+  cluster_admin_principal_arn_pipeline = var.eks_cluster_admin_principal_pipeline
+  cluster_admin_principal_arn_group    = var.eks_cluster_admin_principal_group
+  node_group_name                      = "${var.project}-${var.environment}-workers"
+  instance_types                       = var.eks_instance_types
+  desired_size                         = var.eks_desired_size
+  min_size                             = var.eks_min_size
+  max_size                             = var.eks_max_size
+  max_unavailable                      = var.eks_max_unavailable
+  capacity_type                        = var.eks_capacity_type
+  disk_size                            = var.eks_disk_size
+  ami_type                             = var.eks_ami_type
+  labels                               = var.eks_labels
+  tags                                 = var.tags
 }
+
+# module "ecr" {
+#   source = "../../modules/ecr"
+
+#   repository_names     = var.ecr_repository_names
+#   image_tag_mutability = var.ecr_image_tag_mutability
+#   scan_on_push         = var.ecr_scan_on_push
+#   encryption_type      = var.ecr_encryption_type
+#   keep_latest_images   = var.ecr_keep_latest_images
+#   tags                 = var.tags
+# }
 
 # module "rds" {
 #   source = "../../modules/rds"
