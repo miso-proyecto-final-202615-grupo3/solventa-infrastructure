@@ -24,10 +24,13 @@ concurrency:
 env:
   AWS_REGION: ${{ secrets.AWS_REGION }}
   CLUSTER_NAME: solventa-${{ inputs.target_env }}-eks
+  CLOUDWATCH_ROLE_NAME: CloudWatchObservabilityIAMRole
+  K8S_NAMESPACE: solventa-${{ inputs.target_env }}
+  OPENTELEMETRY_COLLECTOR_SA: solventa-otel-collector-sa
+  OPENTELEMETRY_ROLE_NAME: OpenTelemetryIAMRole
+  ESO_ROLE_NAME: ExternalOperatorIAMRole
   VPC_NAME: solventa-${{ inputs.target_env }}-vpc
   LBC_ROLE_NAME: AWSLoadBalancerControllerIAMRole
-  ESO_ROLE_NAME: ExternalOperatorIAMRole
-  CLOUDWATCH_ROLE_NAME: CloudWatchObservabilityIAMRole
 
 jobs:
   eks-setup:
@@ -121,6 +124,40 @@ jobs:
               --namespace amazon-cloudwatch \
               --service-account cloudwatch-agent \
               --role-arn "$CLOUDWATCH_ROLE_ARN"
+          else
+            echo "Pod Identity Association amazon-cloudwatch-observability already exists. Skipping creation."
+          fi
+
+      - name: Configure AWS Distro for OpenTelemetry Pod Identity
+        shell: bash
+        run: |
+          set -euo pipefail
+
+          if ! aws iam get-role --role-name "$OPENTELEMETRY_ROLE_NAME" >/dev/null 2>&1; then
+            echo "Required IAM role $OPENTELEMETRY_ROLE_NAME does not exist. Apply the Terraform module first." >&2
+            exit 1
+          fi
+
+          OPENTELEMETRY_ROLE_ARN="$(aws iam get-role \
+            --role-name "$OPENTELEMETRY_ROLE_NAME" \
+            --query 'Role.Arn' \
+            --output text)"
+
+          ASSOC_EXISTS=$(aws eks list-pod-identity-associations \
+            --cluster-name "$CLUSTER_NAME" \
+            --namespace "$K8S_NAMESPACE" \
+            --service-account "$OPENTELEMETRY_COLLECTOR_SA" \
+            --query 'associations[0].associationArn' \
+            --output text 2>/dev/null || echo "None")
+
+          if [ "$ASSOC_EXISTS" = "None" ] || [ -z "$ASSOC_EXISTS" ]; then
+            aws eks create-pod-identity-association \
+              --cluster-name "$CLUSTER_NAME" \
+              --namespace "$K8S_NAMESPACE" \
+              --service-account "$OPENTELEMETRY_COLLECTOR_SA" \
+              --role-arn "$OPENTELEMETRY_ROLE_ARN"
+          else
+            echo "Pod Identity Association adot already exists. Skipping creation."
           fi
 
       - name: Configure External Secrets Operator Pod Identity
@@ -151,6 +188,40 @@ jobs:
               --namespace external-secrets \
               --service-account external-secrets-sa \
               --role-arn "$ESO_ROLE_ARN"
+          else
+            echo "Pod Identity Association external-secrets already exists. Skipping creation."
+          fi
+
+      - name: Configure AWS Load Balancer Controller Pod Identity
+        shell: bash
+        run: |
+          set -euo pipefail
+
+          if ! aws iam get-role --role-name "$LBC_ROLE_NAME" >/dev/null 2>&1; then
+            echo "Required IAM role $LBC_ROLE_NAME does not exist. Apply the Terraform module first." >&2
+            exit 1
+          fi
+
+          LBC_ROLE_ARN="$(aws iam get-role \
+            --role-name "$LBC_ROLE_NAME" \
+            --query 'Role.Arn' \
+            --output text)"
+
+          ASSOC_EXISTS=$(aws eks list-pod-identity-associations \
+            --cluster-name "$CLUSTER_NAME" \
+            --namespace kube-system \
+            --service-account aws-load-balancer-controller \
+            --query 'associations[0].associationArn' \
+            --output text 2>/dev/null || echo "None")
+
+          if [ "$ASSOC_EXISTS" = "None" ] || [ -z "$ASSOC_EXISTS" ]; then
+            aws eks create-pod-identity-association \
+              --cluster-name "$CLUSTER_NAME" \
+              --namespace kube-system \
+              --service-account aws-load-balancer-controller \
+              --role-arn "$LBC_ROLE_ARN"
+          else
+            echo "Pod Identity Association aws-load-balancer-controller already exists. Skipping creation."
           fi
 
       - name: Install Amazon CloudWatch Observability Add-on
@@ -175,6 +246,30 @@ jobs:
             aws eks wait addon-active \
               --cluster-name "$CLUSTER_NAME" \
               --addon-name amazon-cloudwatch-observability
+          fi
+
+      - name: Install AWS Distro for OpenTelemetry Add-on
+        shell: bash
+        run: |
+          set -euo pipefail
+
+          # Check if the addon is already installed and ACTIVE
+          ADDON_STATUS=$(aws eks describe-addon \
+            --cluster-name "$CLUSTER_NAME" \
+            --addon-name adot \
+            --query "addon.status" \
+            --output text 2>/dev/null || echo "NOT_FOUND")
+
+          if [ "$ADDON_STATUS" = "ACTIVE" ]; then
+            echo "Addon adot is already installed and ACTIVE. Skipping creation."
+          else
+            aws eks create-addon \
+              --cluster-name "$CLUSTER_NAME" \
+              --addon-name adot \
+              --resolve-conflicts OVERWRITE
+            aws eks wait addon-active \
+              --cluster-name "$CLUSTER_NAME" \
+              --addon-name adot
           fi
 
       - name: Install External Secrets Operator with Helm
@@ -236,36 +331,6 @@ jobs:
             --wait \
             --timeout 10m
 
-      - name: Configure AWS Load Balancer Controller Pod Identity
-        shell: bash
-        run: |
-          set -euo pipefail
-
-          if ! aws iam get-role --role-name "$LBC_ROLE_NAME" >/dev/null 2>&1; then
-            echo "Required IAM role $LBC_ROLE_NAME does not exist. Apply the Terraform module first." >&2
-            exit 1
-          fi
-
-          LBC_ROLE_ARN="$(aws iam get-role \
-            --role-name "$LBC_ROLE_NAME" \
-            --query 'Role.Arn' \
-            --output text)"
-
-          ASSOC_EXISTS=$(aws eks list-pod-identity-associations \
-            --cluster-name "$CLUSTER_NAME" \
-            --namespace kube-system \
-            --service-account aws-load-balancer-controller \
-            --query 'associations[0].associationArn' \
-            --output text 2>/dev/null || echo "None")
-
-          if [ "$ASSOC_EXISTS" = "None" ] || [ -z "$ASSOC_EXISTS" ]; then
-            aws eks create-pod-identity-association \
-              --cluster-name "$CLUSTER_NAME" \
-              --namespace kube-system \
-              --service-account aws-load-balancer-controller \
-              --role-arn "$LBC_ROLE_ARN"
-          fi
-
       - name: Verify installed components
         shell: bash
         run: |
@@ -275,6 +340,8 @@ jobs:
             --output wide
           kubectl get pods -A -l app.kubernetes.io/name=amazon-cloudwatch-observability \
             --output wide
+          kubectl get pods -A -l app.kubernetes.io/name=opentelemetry-operator \
+            --output wide
           kubectl get pods -A -l app.kubernetes.io/name=external-secrets \
             --output wide
           kubectl get pods -A -l app.kubernetes.io/name=aws-load-balancer-controller \
@@ -283,6 +350,11 @@ jobs:
           aws eks describe-addon \
             --cluster-name "$CLUSTER_NAME" \
             --addon-name eks-pod-identity-agent \
+            --query 'addon.{name:name,status:status,version:version}' \
+            --output table
+          aws eks describe-addon \
+            --cluster-name "$CLUSTER_NAME" \
+            --addon-name otel \
             --query 'addon.{name:name,status:status,version:version}' \
             --output table
           aws eks describe-addon \
