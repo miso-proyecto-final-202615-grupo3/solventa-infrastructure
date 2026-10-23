@@ -92,7 +92,7 @@ jobs:
           TF_VAR_redis_auth_token: ${{ secrets.REDIS_AUTH_TOKEN }}
           TF_VAR_eks_cluster_admin_principal_pipeline: ${{ secrets.AWS_ROLE_ARN }}
           TF_VAR_eks_cluster_admin_principal_group: ${{ secrets.EKS_CLUSTER_ADMIN_USER_ARN }}
-          TF_VAR_environment_enabled: ${{ (inputs.environment_enabled == null || inputs.environment_enabled == true) && 'true' || 'false' }}
+          TF_VAR_environment_enabled: ${{ format('{0}', inputs.environment_enabled) == 'false' && 'false' || 'true' }}
           TF_VAR_api_origin_domain: ${{ inputs.api_origin_domain }}
         run: |
           terraform -chdir=src/environments/$DEPLOYMENT_ENV apply \
