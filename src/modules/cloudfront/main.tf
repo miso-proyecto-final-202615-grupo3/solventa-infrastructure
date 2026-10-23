@@ -43,6 +43,22 @@ resource "aws_cloudfront_distribution" "frontend" {
     origin_access_control_id = aws_cloudfront_origin_access_control.frontend.id
   }
 
+  dynamic "origin" {
+    for_each = var.api_origin_domain == null ? [] : [var.api_origin_domain]
+
+    content {
+      domain_name = origin.value
+      origin_id   = "api-origin"
+
+      custom_origin_config {
+        http_port              = 80
+        https_port             = 443
+        origin_protocol_policy = var.api_origin_protocol_policy
+        origin_ssl_protocols   = ["TLSv1.2"]
+      }
+    }
+  }
+
   default_cache_behavior {
     target_origin_id       = "${var.bucket_name}-s3-origin"
     viewer_protocol_policy = "redirect-to-https"
@@ -50,6 +66,22 @@ resource "aws_cloudfront_distribution" "frontend" {
     cached_methods         = ["GET", "HEAD", "OPTIONS"]
     compress               = true
     cache_policy_id        = "658327ea-f89d-4fab-a63d-7e88639e58f6"
+  }
+
+  # /api/* goes to the backend load balancer, same origin as the SPA (no CORS).
+  dynamic "ordered_cache_behavior" {
+    for_each = var.api_origin_domain == null ? [] : [1]
+
+    content {
+      path_pattern             = "/api/*"
+      target_origin_id         = "api-origin"
+      viewer_protocol_policy   = "redirect-to-https"
+      allowed_methods          = ["GET", "HEAD", "OPTIONS", "PUT", "POST", "PATCH", "DELETE"]
+      cached_methods           = ["GET", "HEAD"]
+      compress                 = true
+      cache_policy_id          = "4135ea2d-6df8-44a3-9df3-4b5a84be39ad" # Managed-CachingDisabled
+      origin_request_policy_id = "b689b0a8-53d0-40ab-baf2-68738e2966ac" # Managed-AllViewerExceptHostHeader
+    }
   }
 
   custom_error_response {

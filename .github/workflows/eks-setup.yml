@@ -13,6 +13,12 @@ on:
           - prod
         default: "dev"
 
+  workflow_call:
+    inputs:
+      target_env:
+        required: true
+        type: string
+
 permissions:
   contents: read
   id-token: write

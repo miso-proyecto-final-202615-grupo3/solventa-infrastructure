@@ -1,19 +1,21 @@
-# module "vpc" {
-#   source = "../../modules/vpc"
+module "vpc" {
+  count = var.environment_enabled ? 1 : 0
 
-#   vpc_name                      = "${var.project}-${var.environment}-vpc"
-#   vpc_cidr                      = var.vpc_cidr
-#   public_subnet_cidrs           = var.public_subnet_cidrs
-#   private_compute_subnet_cidrs  = var.private_compute_subnet_cidrs
-#   private_database_subnet_cidrs = var.private_database_subnet_cidrs
-#   internet_gateway_name         = "${var.project}-${var.environment}-igw"
-#   nat_gateway_name              = "${var.project}-${var.environment}-nat"
-#   subnet_name_prefix            = "${var.project}-${var.environment}"
-#   public_route_table_name       = "${var.project}-${var.environment}-public-rt"
-#   private_route_table_name      = "${var.project}-${var.environment}-private-rt"
-#   availability_zones            = var.availability_zones
-#   tags                          = var.tags
-# }
+  source = "../../modules/vpc"
+
+  vpc_name                      = "${var.project}-${var.environment}-vpc"
+  vpc_cidr                      = var.vpc_cidr
+  public_subnet_cidrs           = var.public_subnet_cidrs
+  private_compute_subnet_cidrs  = var.private_compute_subnet_cidrs
+  private_database_subnet_cidrs = var.private_database_subnet_cidrs
+  internet_gateway_name         = "${var.project}-${var.environment}-igw"
+  nat_gateway_name              = "${var.project}-${var.environment}-nat"
+  subnet_name_prefix            = "${var.project}-${var.environment}"
+  public_route_table_name       = "${var.project}-${var.environment}-public-rt"
+  private_route_table_name      = "${var.project}-${var.environment}-private-rt"
+  availability_zones            = var.availability_zones
+  tags                          = var.tags
+}
 
 # module "load_balancer" {
 #   source = "../../modules/alb"
@@ -36,31 +38,33 @@
 #   tags                             = merge(var.tags, { "elbv2.k8s.aws/cluster" = "${var.project}-${var.environment}-eks" })
 # }
 
-# module "eks" {
-#   source = "../../modules/eks"
+module "eks" {
+  count = var.environment_enabled ? 1 : 0
 
-#   cluster_name                         = "${var.project}-${var.environment}-eks"
-#   cluster_version                      = var.eks_cluster_version
-#   vpc_id                               = module.vpc.vpc_id
-#   vpc_cidr                             = module.vpc.vpc_cidr
-#   private_subnet_ids                   = module.vpc.private_compute_subnet_ids
-#   enable_public_endpoint               = var.eks_enable_public_endpoint
-#   public_endpoint_cidrs                = var.eks_public_endpoint_cidrs
-#   cluster_log_types                    = var.eks_cluster_log_types
-#   cluster_admin_principal_arn_pipeline = var.eks_cluster_admin_principal_pipeline
-#   cluster_admin_principal_arn_group    = var.eks_cluster_admin_principal_group
-#   node_group_name                      = "${var.project}-${var.environment}-workers"
-#   instance_types                       = var.eks_instance_types
-#   desired_size                         = var.eks_desired_size
-#   min_size                             = var.eks_min_size
-#   max_size                             = var.eks_max_size
-#   max_unavailable                      = var.eks_max_unavailable
-#   capacity_type                        = var.eks_capacity_type
-#   disk_size                            = var.eks_disk_size
-#   ami_type                             = var.eks_ami_type
-#   labels                               = var.eks_labels
-#   tags                                 = var.tags
-# }
+  source = "../../modules/eks"
+
+  cluster_name                         = "${var.project}-${var.environment}-eks"
+  cluster_version                      = var.eks_cluster_version
+  vpc_id                               = module.vpc[0].vpc_id
+  vpc_cidr                             = module.vpc[0].vpc_cidr
+  private_subnet_ids                   = module.vpc[0].private_compute_subnet_ids
+  enable_public_endpoint               = var.eks_enable_public_endpoint
+  public_endpoint_cidrs                = var.eks_public_endpoint_cidrs
+  cluster_log_types                    = var.eks_cluster_log_types
+  cluster_admin_principal_arn_pipeline = var.eks_cluster_admin_principal_pipeline
+  cluster_admin_principal_arn_group    = var.eks_cluster_admin_principal_group
+  node_group_name                      = "${var.project}-${var.environment}-workers"
+  instance_types                       = var.eks_instance_types
+  desired_size                         = var.eks_desired_size
+  min_size                             = var.eks_min_size
+  max_size                             = var.eks_max_size
+  max_unavailable                      = var.eks_max_unavailable
+  capacity_type                        = var.eks_capacity_type
+  disk_size                            = var.eks_disk_size
+  ami_type                             = var.eks_ami_type
+  labels                               = var.eks_labels
+  tags                                 = var.tags
+}
 
 # module "ecr" {
 #   source = "../../modules/ecr"
@@ -73,59 +77,63 @@
 #   tags                 = var.tags
 # }
 
-# module "rds" {
-#   source = "../../modules/rds"
+module "rds" {
+  count = var.environment_enabled ? 1 : 0
 
-#   cluster_identifier           = "${var.project}-${var.environment}-rds"
-#   engine_version               = var.rds_engine_version
-#   database_name                = var.rds_database_name
-#   master_username              = var.rds_master_username
-#   master_password              = var.rds_master_password
-#   port                         = var.rds_port
-#   preferred_backup_window      = var.rds_preferred_backup_window
-#   backup_retention_period      = var.rds_backup_retention_period
-#   preferred_maintenance_window = var.rds_preferred_maintenance_window
-#   allocated_storage            = var.rds_allocated_storage
-#   max_allocated_storage        = var.rds_max_allocated_storage
-#   storage_encrypted            = var.rds_storage_encrypted
-#   parameter_group_name         = "${var.project}-${var.environment}-rds-pg"
-#   parameter_group_family       = var.rds_parameter_group_family
-#   vpc_id                       = module.vpc.vpc_id
-#   vpc_cidr                     = module.vpc.vpc_cidr
-#   subnet_group_name            = "${var.project}-${var.environment}-rds-subnets"
-#   subnet_ids                   = module.vpc.public_subnet_ids
-#   instance_count               = var.rds_instance_count
-#   instance_class               = var.rds_instance_class
-#   skip_final_snapshot          = var.rds_skip_final_snapshot
-#   deletion_protection          = var.rds_deletion_protection
-#   apply_immediately            = var.rds_apply_immediately
-#   serverlessv2_scaling_configuration = {
-#     max_capacity             = var.rds_serverlessv2_max_capacity
-#     min_capacity             = var.rds_serverlessv2_min_capacity
-#     seconds_until_auto_pause = var.rds_serverlessv2_seconds_until_auto_pause
-#   }
-#   tags = var.tags
-# }
+  source = "../../modules/rds"
 
-# module "redis" {
-#   source = "../../modules/redis"
+  cluster_identifier           = "${var.project}-${var.environment}-rds"
+  engine_version               = var.rds_engine_version
+  database_name                = var.rds_database_name
+  master_username              = var.rds_master_username
+  master_password              = var.rds_master_password
+  port                         = var.rds_port
+  preferred_backup_window      = var.rds_preferred_backup_window
+  backup_retention_period      = var.rds_backup_retention_period
+  preferred_maintenance_window = var.rds_preferred_maintenance_window
+  allocated_storage            = var.rds_allocated_storage
+  max_allocated_storage        = var.rds_max_allocated_storage
+  storage_encrypted            = var.rds_storage_encrypted
+  parameter_group_name         = "${var.project}-${var.environment}-rds-pg"
+  parameter_group_family       = var.rds_parameter_group_family
+  vpc_id                       = module.vpc[0].vpc_id
+  vpc_cidr                     = module.vpc[0].vpc_cidr
+  subnet_group_name            = "${var.project}-${var.environment}-rds-subnets"
+  subnet_ids                   = module.vpc[0].public_subnet_ids
+  instance_count               = var.rds_instance_count
+  instance_class               = var.rds_instance_class
+  skip_final_snapshot          = var.rds_skip_final_snapshot
+  deletion_protection          = var.rds_deletion_protection
+  apply_immediately            = var.rds_apply_immediately
+  serverlessv2_scaling_configuration = {
+    max_capacity             = var.rds_serverlessv2_max_capacity
+    min_capacity             = var.rds_serverlessv2_min_capacity
+    seconds_until_auto_pause = var.rds_serverlessv2_seconds_until_auto_pause
+  }
+  tags = var.tags
+}
 
-#   replication_group_id       = "${var.project}-${var.environment}-redis"
-#   description                = "Redis cache for ${var.project} ${var.environment}"
-#   engine_version             = var.redis_engine_version
-#   node_type                  = var.redis_node_type
-#   port                       = var.redis_port
-#   num_cache_clusters         = var.redis_num_cache_clusters
-#   snapshot_retention_limit   = var.redis_snapshot_retention_limit
-#   apply_immediately          = var.redis_apply_immediately
-#   at_rest_encryption_enabled = var.redis_at_rest_encryption_enabled
-#   transit_encryption_enabled = var.redis_transit_encryption_enabled
-#   auth_token                 = var.redis_auth_token
-#   vpc_id                     = module.vpc.vpc_id
-#   allowed_cidr_blocks        = [var.vpc_cidr]
-#   subnet_ids                 = module.vpc.private_database_subnet_ids
-#   tags                       = var.tags
-# }
+module "redis" {
+  count = var.environment_enabled ? 1 : 0
+
+  source = "../../modules/redis"
+
+  replication_group_id       = "${var.project}-${var.environment}-redis"
+  description                = "Redis cache for ${var.project} ${var.environment}"
+  engine_version             = var.redis_engine_version
+  node_type                  = var.redis_node_type
+  port                       = var.redis_port
+  num_cache_clusters         = var.redis_num_cache_clusters
+  snapshot_retention_limit   = var.redis_snapshot_retention_limit
+  apply_immediately          = var.redis_apply_immediately
+  at_rest_encryption_enabled = var.redis_at_rest_encryption_enabled
+  transit_encryption_enabled = var.redis_transit_encryption_enabled
+  auth_token                 = var.redis_auth_token
+  vpc_id                     = module.vpc[0].vpc_id
+  allowed_cidr_blocks        = [var.vpc_cidr]
+  subnet_ids                 = module.vpc[0].private_database_subnet_ids
+  tags                       = var.tags
+}
 
 module "storage_bucket" {
   source = "../../modules/s3_bucket"
@@ -137,8 +145,9 @@ module "storage_bucket" {
 module "cloudfront" {
   source = "../../modules/cloudfront"
 
-  bucket_name = var.frontend_bucket_name
-  tags        = var.tags
+  bucket_name       = var.frontend_bucket_name
+  api_origin_domain = var.environment_enabled && try(var.api_origin_domain != "", false) ? var.api_origin_domain : null
+  tags              = var.tags
 }
 
 module "cognito" {

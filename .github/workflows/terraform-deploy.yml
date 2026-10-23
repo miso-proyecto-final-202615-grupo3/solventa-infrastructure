@@ -12,6 +12,27 @@ on:
           - qa
           - prod
         default: "dev"
+      api_origin_domain:
+        description: "ALB DNS name CloudFront proxies /api/* to (dev only, optional)"
+        required: false
+        type: string
+        default: ""
+
+  workflow_call:
+    inputs:
+      target_env:
+        required: true
+        type: string
+      environment_enabled:
+        description: "Create (true) or tear down (false) VPC, EKS, RDS and Redis"
+        required: false
+        type: boolean
+        default: true
+      api_origin_domain:
+        description: "ALB DNS name CloudFront proxies /api/* to"
+        required: false
+        type: string
+        default: ""
 
 permissions:
   id-token: write
@@ -66,6 +87,8 @@ jobs:
           TF_VAR_redis_auth_token: ${{ secrets.REDIS_AUTH_TOKEN }}
           TF_VAR_eks_cluster_admin_principal_pipeline: ${{ secrets.AWS_ROLE_ARN }}
           TF_VAR_eks_cluster_admin_principal_group: ${{ secrets.EKS_CLUSTER_ADMIN_USER_ARN }}
+          TF_VAR_environment_enabled: ${{ inputs.environment_enabled == false && 'false' || 'true' }}
+          TF_VAR_api_origin_domain: ${{ inputs.api_origin_domain }}
         run: |
           terraform -chdir=src/environments/$DEPLOYMENT_ENV apply \
             -var-file="../../../config/$DEPLOYMENT_ENV/$DEPLOYMENT_ENV.tfvars" \

@@ -477,3 +477,15 @@ variable "data_kms_key_enable_key_rotation" {
   type        = bool
 }
 
+
+variable "environment_enabled" {
+  description = "Whether the compute/data stack (VPC, EKS, RDS, Redis) exists. False tears it down and keeps the persistent resources (CloudFront, Cognito, S3, KMS)."
+  type        = bool
+  default     = true
+}
+
+variable "api_origin_domain" {
+  description = "DNS name of the backend ALB that CloudFront proxies /api/* to. Null disables it."
+  type        = string
+  default     = null
+}
