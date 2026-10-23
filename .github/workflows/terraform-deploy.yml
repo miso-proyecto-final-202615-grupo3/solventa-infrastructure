@@ -12,6 +12,11 @@ on:
           - qa
           - prod
         default: "dev"
+      environment_enabled:
+        description: "dev only: true = create VPC/EKS/RDS/Redis, false = tear them down"
+        required: false
+        type: boolean
+        default: true
       api_origin_domain:
         description: "ALB DNS name CloudFront proxies /api/* to (dev only, optional)"
         required: false
