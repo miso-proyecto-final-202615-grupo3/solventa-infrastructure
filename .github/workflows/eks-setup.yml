@@ -13,6 +13,12 @@ on:
           - prod
         default: "dev"
 
+  workflow_call:
+    inputs:
+      target_env:
+        required: true
+        type: string
+
 permissions:
   contents: read
   id-token: write
@@ -31,7 +37,8 @@ env:
   ESO_ROLE_NAME: ExternalOperatorIAMRole
   VPC_NAME: solventa-${{ inputs.target_env }}-vpc
   LBC_ROLE_NAME: AWSLoadBalancerControllerIAMRole
-  SOLVENTA_ROLE_NAME: SolventaAppIAMRole
+  APP_ROLE_NAME: SolventaAppRole
+  APP_SERVICE_ACCOUNT: solventa-app-sa
 
 jobs:
   eks-setup:
@@ -225,25 +232,25 @@ jobs:
             echo "Pod Identity Association aws-load-balancer-controller already exists. Skipping creation."
           fi
 
-      - name: Configure Solventa App Pod Identity
+      - name: Configure Solventa application Pod Identity
         shell: bash
         run: |
           set -euo pipefail
 
-          if ! aws iam get-role --role-name "$SOLVENTA_ROLE_NAME" >/dev/null 2>&1; then
-            echo "Required IAM role $SOLVENTA_ROLE_NAME does not exist. Apply the Terraform module first." >&2
+          if ! aws iam get-role --role-name "$APP_ROLE_NAME" >/dev/null 2>&1; then
+            echo "Required IAM role $APP_ROLE_NAME does not exist. Apply the Terraform module first." >&2
             exit 1
           fi
 
-          SOLVENTA_ROLE_ARN="$(aws iam get-role \
-            --role-name "$SOLVENTA_ROLE_NAME" \
+          APP_ROLE_ARN="$(aws iam get-role \
+            --role-name "$APP_ROLE_NAME" \
             --query 'Role.Arn' \
             --output text)"
 
           ASSOC_EXISTS=$(aws eks list-pod-identity-associations \
             --cluster-name "$CLUSTER_NAME" \
             --namespace "$K8S_NAMESPACE" \
-            --service-account solventa-app-sa \
+            --service-account "$APP_SERVICE_ACCOUNT" \
             --query 'associations[0].associationArn' \
             --output text 2>/dev/null || echo "None")
 
@@ -251,10 +258,10 @@ jobs:
             aws eks create-pod-identity-association \
               --cluster-name "$CLUSTER_NAME" \
               --namespace "$K8S_NAMESPACE" \
-              --service-account solventa-app-sa \
-              --role-arn "$SOLVENTA_ROLE_ARN"
+              --service-account "$APP_SERVICE_ACCOUNT" \
+              --role-arn "$APP_ROLE_ARN"
           else
-            echo "Pod Identity Association aws-load-balancer-controller already exists. Skipping creation."
+            echo "Pod Identity Association Solventa application already exists. Skipping creation."
           fi
 
       - name: Install Amazon CloudWatch Observability Add-on

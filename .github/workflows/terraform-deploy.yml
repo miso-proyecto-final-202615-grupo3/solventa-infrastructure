@@ -17,6 +17,11 @@ on:
         required: true
         type: boolean
         default: true
+      api_origin_domain:
+        description: "ALB DNS origin for CloudFront"
+        required: false
+        type: string
+        default: ""
 
 permissions:
   id-token: write
@@ -35,6 +40,8 @@ jobs:
 
     env:
       DEPLOYMENT_ENV: ${{ inputs.target_env }}
+      ENV_ENABLED: ${{ inputs.env_enabled }}
+      API_ORIGIN_DOMAIN: ${{ inputs.api_origin_domain }}
 
     steps:
       - name: Checkout code
@@ -65,13 +72,14 @@ jobs:
 
       - name: Terraform Apply
         env:
-          TF_VAR_environment_enabled: ${{ inputs.env_enabled }}
+          TF_VAR_environment_enabled: $ENV_ENABLED
           TF_VAR_rds_database_name: ${{ secrets.RDS_DATABASE_NAME }}
           TF_VAR_rds_master_username: ${{ secrets.RDS_MASTER_USERNAME }}
           TF_VAR_rds_master_password: ${{ secrets.RDS_MASTER_PASSWORD }}
           TF_VAR_redis_auth_token: ${{ secrets.REDIS_AUTH_TOKEN }}
           TF_VAR_eks_cluster_admin_principal_pipeline: ${{ secrets.AWS_ROLE_ARN }}
           TF_VAR_eks_cluster_admin_principal_group: ${{ secrets.EKS_CLUSTER_ADMIN_USER_ARN }}
+          TF_VAR_cloudfront_api_origin_domain_name: $API_ORIGIN_DOMAIN
         run: |
           terraform -chdir=src/environments/$DEPLOYMENT_ENV apply \
             -var-file="../../../config/$DEPLOYMENT_ENV/$DEPLOYMENT_ENV.tfvars" \
