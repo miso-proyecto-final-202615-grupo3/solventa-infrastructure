@@ -1,52 +1,52 @@
-# output "vpc_id" {
-#   description = "ID of the development VPC."
-#   value       = module.vpc.vpc_id
-# }
+output "vpc_id" {
+  description = "ID of the development VPC."
+  value       = one(module.vpc[*].vpc_id)
+}
 
-# output "vpc_cidr" {
-#   description = "CIDR block of the development VPC."
-#   value       = module.vpc.vpc_cidr
-# }
+output "vpc_cidr" {
+  description = "CIDR block of the development VPC."
+  value       = one(module.vpc[*].vpc_cidr)
+}
 
-# output "public_subnet_ids" {
-#   description = "IDs of the public subnets."
-#   value       = module.vpc.public_subnet_ids
-# }
+output "public_subnet_ids" {
+  description = "IDs of the public subnets."
+  value       = one(module.vpc[*].public_subnet_ids)
+}
 
-# output "private_compute_subnet_ids" {
-#   description = "IDs of the private compute subnets."
-#   value       = module.vpc.private_compute_subnet_ids
-# }
+output "private_compute_subnet_ids" {
+  description = "IDs of the private compute subnets."
+  value       = one(module.vpc[*].private_compute_subnet_ids)
+}
 
-# output "private_database_subnet_ids" {
-#   description = "IDs of the private database subnets."
-#   value       = module.vpc.private_database_subnet_ids
-# }
+output "private_database_subnet_ids" {
+  description = "IDs of the private database subnets."
+  value       = one(module.vpc[*].private_database_subnet_ids)
+}
 
 # output "load_balancer_arn" {
 #   description = "ARN of the application load balancer."
 #   value       = module.application_load_balancer.load_balancer_arn
 # }
 
-# output "eks_cluster_id" {
-#   description = "ID of the development EKS cluster."
-#   value       = module.eks.cluster_id
-# }
+output "eks_cluster_id" {
+  description = "ID of the development EKS cluster."
+  value       = one(module.eks[*].cluster_id)
+}
 
-# output "eks_cluster_endpoint" {
-#   description = "Endpoint of the development EKS cluster."
-#   value       = module.eks.cluster_endpoint
-# }
+output "eks_cluster_endpoint" {
+  description = "Endpoint of the development EKS cluster."
+  value       = one(module.eks[*].cluster_endpoint)
+}
 
-# output "rds_cluster_endpoint" {
-#   description = "Endpoint of the RDS PostgreSQL cluster."
-#   value       = module.rds.cluster_endpoint
-# }
+output "rds_cluster_endpoint" {
+  description = "Endpoint of the RDS PostgreSQL cluster."
+  value       = one(module.rds[*].cluster_endpoint)
+}
 
-# output "redis_endpoint" {
-#   description = "Primary endpoint of the Redis replication group."
-#   value       = module.redis.primary_endpoint_address
-# }
+output "redis_endpoint" {
+  description = "Primary endpoint of the Redis replication group."
+  value       = one(module.redis[*].primary_endpoint_address)
+}
 
 output "cloudfront_endpoint" {
   description = "Domain name of the CloudFront distribution."

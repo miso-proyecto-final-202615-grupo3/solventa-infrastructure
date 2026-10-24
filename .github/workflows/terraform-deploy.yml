@@ -12,6 +12,11 @@ on:
           - qa
           - prod
         default: "dev"
+      env_enabled:
+        description: "Deploy network, compute and database resources"
+        required: true
+        type: boolean
+        default: true
 
 permissions:
   id-token: write
@@ -60,6 +65,7 @@ jobs:
 
       - name: Terraform Apply
         env:
+          TF_VAR_environment_enabled: ${{ inputs.env_enabled }}
           TF_VAR_rds_database_name: ${{ secrets.RDS_DATABASE_NAME }}
           TF_VAR_rds_master_username: ${{ secrets.RDS_MASTER_USERNAME }}
           TF_VAR_rds_master_password: ${{ secrets.RDS_MASTER_PASSWORD }}
