@@ -30,6 +30,11 @@ resource "aws_cloudfront_origin_access_control" "frontend" {
   signing_protocol                  = "sigv4"
 }
 
+locals {
+  s3_origin_id  = "${var.bucket_name}-s3-origin"
+  api_origin_id = "${var.bucket_name}-api-origin"
+}
+
 resource "aws_cloudfront_distribution" "frontend" {
   enabled             = true
   comment             = "CloudFront distribution for ${var.bucket_name}"
@@ -39,16 +44,16 @@ resource "aws_cloudfront_distribution" "frontend" {
 
   origin {
     domain_name              = aws_s3_bucket.frontend.bucket_regional_domain_name
-    origin_id                = "${var.bucket_name}-s3-origin"
+    origin_id                = local.s3_origin_id
     origin_access_control_id = aws_cloudfront_origin_access_control.frontend.id
   }
 
   dynamic "origin" {
-    for_each = var.api_origin_domain == null ? [] : [var.api_origin_domain]
+    for_each = var.api_origin_domain_name != null ? [var.api_origin_domain_name] : []
 
     content {
       domain_name = origin.value
-      origin_id   = "api-origin"
+      origin_id   = local.api_origin_id
 
       custom_origin_config {
         http_port              = 80
@@ -59,43 +64,42 @@ resource "aws_cloudfront_distribution" "frontend" {
     }
   }
 
-  default_cache_behavior {
-    target_origin_id       = "${var.bucket_name}-s3-origin"
-    viewer_protocol_policy = "redirect-to-https"
-    allowed_methods        = ["GET", "HEAD", "OPTIONS"]
-    cached_methods         = ["GET", "HEAD", "OPTIONS"]
-    compress               = true
-    cache_policy_id        = "658327ea-f89d-4fab-a63d-7e88639e58f6"
-  }
-
-  # /api/* goes to the backend load balancer, same origin as the SPA (no CORS).
   dynamic "ordered_cache_behavior" {
-    for_each = var.api_origin_domain == null ? [] : [1]
+    for_each = var.api_origin_domain_name != null ? [1] : []
 
     content {
       path_pattern             = "/api/*"
-      target_origin_id         = "api-origin"
+      target_origin_id         = local.api_origin_id
       viewer_protocol_policy   = "redirect-to-https"
       allowed_methods          = ["GET", "HEAD", "OPTIONS", "PUT", "POST", "PATCH", "DELETE"]
       cached_methods           = ["GET", "HEAD"]
       compress                 = true
-      cache_policy_id          = "4135ea2d-6df8-44a3-9df3-4b5a84be39ad" # Managed-CachingDisabled
-      origin_request_policy_id = "b689b0a8-53d0-40ab-baf2-68738e2966ac" # Managed-AllViewerExceptHostHeader
+      cache_policy_id          = "4135ea2d-6df8-44a3-9df3-4b5a748516ca" # Managed-CachingDisabled
+      origin_request_policy_id = "216adef5-5c7f-47e4-b989-5492eafa07d3" # Managed-AllViewer
     }
+  }
+
+  default_cache_behavior {
+    target_origin_id       = local.s3_origin_id
+    viewer_protocol_policy = "redirect-to-https"
+    allowed_methods        = ["GET", "HEAD", "OPTIONS"]
+    cached_methods         = ["GET", "HEAD", "OPTIONS"]
+    compress               = true
+    cache_policy_id        = "658327ea-f89d-4fab-a63d-7e88639e58f6" # CachingOptimized
   }
 
   custom_error_response {
     error_code            = 403
     response_code         = 200
     response_page_path    = "/index.html"
-    error_caching_min_ttl = 0
+    error_caching_min_ttl = 10
   }
 
   custom_error_response {
     error_code            = 404
     response_code         = 200
     response_page_path    = "/index.html"
-    error_caching_min_ttl = 0
+    error_caching_min_ttl = 10
   }
 
   restrictions {

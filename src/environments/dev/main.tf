@@ -1,7 +1,7 @@
 module "vpc" {
-  count = var.environment_enabled ? 1 : 0
-
   source = "../../modules/vpc"
+
+  count = var.environment_enabled ? 1 : 0
 
   vpc_name                      = "${var.project}-${var.environment}-vpc"
   vpc_cidr                      = var.vpc_cidr
@@ -22,8 +22,8 @@ module "vpc" {
 
 #   load_balancer_name               = "${var.project}-${var.environment}-alb"
 #   target_group_name                = "${var.project}-${var.environment}-tg"
-#   vpc_id                           = module.vpc.vpc_id
-#   subnet_ids                       = module.vpc.public_subnet_ids
+#   vpc_id                           = module.vpc[0].vpc_id
+#   subnet_ids                       = module.vpc[0].public_subnet_ids
 #   target_port                      = var.alb_target_port
 #   target_protocol                  = var.alb_target_protocol
 #   certificate_arn                  = var.alb_certificate_arn
@@ -39,9 +39,9 @@ module "vpc" {
 # }
 
 module "eks" {
-  count = var.environment_enabled ? 1 : 0
-
   source = "../../modules/eks"
+
+  count = var.environment_enabled ? 1 : 0
 
   cluster_name                         = "${var.project}-${var.environment}-eks"
   cluster_version                      = var.eks_cluster_version
@@ -66,21 +66,21 @@ module "eks" {
   tags                                 = var.tags
 }
 
-# module "ecr" {
-#   source = "../../modules/ecr"
+module "ecr" {
+  source = "../../modules/ecr"
 
-#   repository_names     = var.ecr_repository_names
-#   image_tag_mutability = var.ecr_image_tag_mutability
-#   scan_on_push         = var.ecr_scan_on_push
-#   encryption_type      = var.ecr_encryption_type
-#   keep_latest_images   = var.ecr_keep_latest_images
-#   tags                 = var.tags
-# }
+  repository_names     = var.ecr_repository_names
+  image_tag_mutability = var.ecr_image_tag_mutability
+  scan_on_push         = var.ecr_scan_on_push
+  encryption_type      = var.ecr_encryption_type
+  keep_latest_images   = var.ecr_keep_latest_images
+  tags                 = var.tags
+}
 
 module "rds" {
-  count = var.environment_enabled ? 1 : 0
-
   source = "../../modules/rds"
+
+  count = var.environment_enabled ? 1 : 0
 
   cluster_identifier           = "${var.project}-${var.environment}-rds"
   engine_version               = var.rds_engine_version
@@ -114,9 +114,9 @@ module "rds" {
 }
 
 module "redis" {
-  count = var.environment_enabled ? 1 : 0
-
   source = "../../modules/redis"
+
+  count = var.environment_enabled ? 1 : 0
 
   replication_group_id       = "${var.project}-${var.environment}-redis"
   description                = "Redis cache for ${var.project} ${var.environment}"
@@ -145,9 +145,10 @@ module "storage_bucket" {
 module "cloudfront" {
   source = "../../modules/cloudfront"
 
-  bucket_name       = var.frontend_bucket_name
-  api_origin_domain = var.environment_enabled && try(var.api_origin_domain != "", false) ? var.api_origin_domain : null
-  tags              = var.tags
+  bucket_name                = var.frontend_bucket_name
+  api_origin_domain_name     = var.cloudfront_api_origin_domain_name
+  api_origin_protocol_policy = var.cloudfront_api_origin_protocol_policy
+  tags                       = var.tags
 }
 
 module "cognito" {

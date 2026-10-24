@@ -8,6 +8,11 @@ variable "environment" {
   type        = string
 }
 
+variable "environment_enabled" {
+  description = "Whether the vpc, eks, rds and redis modules are deployed."
+  type        = bool
+}
+
 variable "tags" {
   description = "Common tags applied to all resources."
   type        = map(string)
@@ -352,6 +357,18 @@ variable "frontend_bucket_name" {
   type        = string
 }
 
+variable "cloudfront_api_origin_domain_name" {
+  description = "DNS name of the ALB serving the backend API for CloudFront /api/* requests. Null disables the API origin."
+  type        = string
+  default     = null
+}
+
+variable "cloudfront_api_origin_protocol_policy" {
+  description = "Protocol CloudFront uses to reach the API origin (http-only, https-only or match-viewer)."
+  type        = string
+  default     = "http-only"
+}
+
 variable "data_kms_key_name" {
   description = "Name of the KMS key for application data."
   type        = string
@@ -475,17 +492,4 @@ variable "sns_principal_services" {
 variable "data_kms_key_enable_key_rotation" {
   description = "Enables automatic KMS key rotation."
   type        = bool
-}
-
-
-variable "environment_enabled" {
-  description = "Whether the compute/data stack (VPC, EKS, RDS, Redis) exists. False tears it down and keeps the persistent resources (CloudFront, Cognito, S3, KMS)."
-  type        = bool
-  default     = true
-}
-
-variable "api_origin_domain" {
-  description = "DNS name of the backend ALB that CloudFront proxies /api/* to. Null disables it."
-  type        = string
-  default     = null
 }

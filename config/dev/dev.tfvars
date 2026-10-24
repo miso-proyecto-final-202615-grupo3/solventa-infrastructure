@@ -1,6 +1,8 @@
 project     = "solventa"
 environment = "dev"
 
+environment_enabled = true
+
 tags = {
 }
 
@@ -56,13 +58,16 @@ eks_labels = {
 }
 
 ecr_repository_names = [
+  "solventa-bff-web",
+  "solventa-bff-mobile",
   "solventa-identity-service",
   "solventa-quotingengine-service",
   "solventa-insurancepolicies-service",
   "solventa-insuranceclaims-service",
   "solventa-payments-service",
-  "solventa-bff-web",
-  "solventa-bff-mobile"
+  "solventa-mock-kyc",
+  "solventa-mock-opendata",
+  "solventa-mock-openfinance"
 ]
 ecr_image_tag_mutability = "MUTABLE"
 ecr_scan_on_push         = true
@@ -99,6 +104,9 @@ redis_transit_encryption_enabled = true
 
 storage_bucket_name  = "solventa-dev-storage-6fba06c21ab7"
 frontend_bucket_name = "solventa-dev-frontend-6fba06c21ab7"
+
+cloudfront_api_origin_domain_name     = null
+cloudfront_api_origin_protocol_policy = "http-only"
 
 cognito_allowed_first_auth_factors           = ["PASSWORD", "EMAIL_OTP"]
 cognito_client_names                         = ["solventa-dev-web", "solventa-dev-mobile"]
