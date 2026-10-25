@@ -74,8 +74,8 @@ resource "aws_cloudfront_distribution" "frontend" {
       allowed_methods          = ["GET", "HEAD", "OPTIONS", "PUT", "POST", "PATCH", "DELETE"]
       cached_methods           = ["GET", "HEAD"]
       compress                 = true
-      cache_policy_id          = "4135ea2d-6df8-44a3-9df3-4b5a748516ca" # Managed-CachingDisabled
-      origin_request_policy_id = "216adef5-5c7f-47e4-b989-5492eafa07d3" # Managed-AllViewer
+      cache_policy_id          = "4135ea2d-6df8-44a3-9df3-4b5a84be39ad" # Managed-CachingDisabled
+      origin_request_policy_id = "216adef6-5c7f-47e4-b989-5492eafa07d3" # Managed-AllViewer
     }
   }
 
