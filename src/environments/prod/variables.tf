@@ -360,13 +360,11 @@ variable "frontend_bucket_name" {
 variable "cloudfront_api_origin_domain_name" {
   description = "DNS name of the ALB serving the backend API for CloudFront /api/* requests. Null disables the API origin."
   type        = string
-  default     = null
 }
 
 variable "cloudfront_api_origin_protocol_policy" {
   description = "Protocol CloudFront uses to reach the API origin (http-only, https-only or match-viewer)."
   type        = string
-  default     = "http-only"
 }
 
 variable "data_kms_key_name" {
