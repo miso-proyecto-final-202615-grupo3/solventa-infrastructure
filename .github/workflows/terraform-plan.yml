@@ -70,14 +70,14 @@ jobs:
 
       - name: Terraform Plan
         env:
-          TF_VAR_environment_enabled: $ENV_ENABLED
+          TF_VAR_environment_enabled: ${{ inputs.env_enabled }}
           TF_VAR_rds_database_name: ${{ secrets.RDS_DATABASE_NAME }}
           TF_VAR_rds_master_username: ${{ secrets.RDS_MASTER_USERNAME }}
           TF_VAR_rds_master_password: ${{ secrets.RDS_MASTER_PASSWORD }}
           TF_VAR_redis_auth_token: ${{ secrets.REDIS_AUTH_TOKEN }}
           TF_VAR_eks_cluster_admin_principal_pipeline: ${{ secrets.AWS_ROLE_ARN }}
           TF_VAR_eks_cluster_admin_principal_group: ${{ secrets.EKS_CLUSTER_ADMIN_USER_ARN }}
-          TF_VAR_cloudfront_api_origin_domain_name: $API_ORIGIN_DOMAIN
+          TF_VAR_cloudfront_api_origin_domain_name: ${{ inputs.api_origin_domain }}
         run: |
           terraform -chdir=src/environments/$DEPLOYMENT_ENV plan \
             -var-file="../../../config/$DEPLOYMENT_ENV/$DEPLOYMENT_ENV.tfvars" \
