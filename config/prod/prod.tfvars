@@ -1,8 +1,6 @@
 project     = "solventa"
 environment = "prod"
 
-environment_enabled = true
-
 tags = {
 }
 
@@ -105,7 +103,6 @@ redis_transit_encryption_enabled = true
 storage_bucket_name  = "solventa-prod-storage-9e44b8245d03"
 frontend_bucket_name = "solventa-prod-frontend-9e44b8245d03"
 
-cloudfront_api_origin_domain_name     = null
 cloudfront_api_origin_protocol_policy = "http-only"
 
 cognito_allowed_first_auth_factors           = ["PASSWORD", "EMAIL_OTP"]
