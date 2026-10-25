@@ -66,16 +66,16 @@ module "eks" {
   tags                                 = var.tags
 }
 
-# module "ecr" {
-#   source = "../../modules/ecr"
+module "ecr" {
+  source = "../../modules/ecr"
 
-#   repository_names     = var.ecr_repository_names
-#   image_tag_mutability = var.ecr_image_tag_mutability
-#   scan_on_push         = var.ecr_scan_on_push
-#   encryption_type      = var.ecr_encryption_type
-#   keep_latest_images   = var.ecr_keep_latest_images
-#   tags                 = var.tags
-# }
+  repository_names     = var.ecr_repository_names
+  image_tag_mutability = var.ecr_image_tag_mutability
+  scan_on_push         = var.ecr_scan_on_push
+  encryption_type      = var.ecr_encryption_type
+  keep_latest_images   = var.ecr_keep_latest_images
+  tags                 = var.tags
+}
 
 module "rds" {
   source = "../../modules/rds"
