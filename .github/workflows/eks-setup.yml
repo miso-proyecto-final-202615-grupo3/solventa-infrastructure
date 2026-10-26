@@ -264,6 +264,14 @@ jobs:
             echo "Pod Identity Association Solventa application already exists. Skipping creation."
           fi
 
+      - name: Enable ENABLE_PREFIX_DELEGATION EKS VPC CNI Add-on
+        shell: bash
+        run: |
+          aws eks update-addon \
+            --cluster-name "$CLUSTER_NAME" \
+            --addon-name vpc-cni
+            --configuration-values '{"env":{"ENABLE_PREFIX_DELEGATION":"true"}}'
+
       - name: Install Amazon CloudWatch Observability Add-on
         shell: bash
         run: |
