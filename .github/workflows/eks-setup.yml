@@ -80,6 +80,15 @@ jobs:
             --query 'cluster.{name:name,region:region,status:status,endpoint:endpoint}' \
             --output table
 
+      - name: Enable ENABLE_PREFIX_DELEGATION EKS VPC CNI Add-on
+        shell: bash
+        run: |
+          aws eks create-addon \
+            --cluster-name "$CLUSTER_NAME" \
+            --addon-name vpc-cni \
+            --resolve-conflicts OVERWRITE \
+            --configuration-values '{"env":{"ENABLE_PREFIX_DELEGATION":"true"}}'
+
       - name: Install AWS Pod Identity Add-on
         shell: bash
         run: |
@@ -263,14 +272,6 @@ jobs:
           else
             echo "Pod Identity Association Solventa application already exists. Skipping creation."
           fi
-
-      - name: Enable ENABLE_PREFIX_DELEGATION EKS VPC CNI Add-on
-        shell: bash
-        run: |
-          aws eks update-addon \
-            --cluster-name "$CLUSTER_NAME" \
-            --addon-name vpc-cni
-            --configuration-values '{"env":{"ENABLE_PREFIX_DELEGATION":"true"}}'
 
       - name: Install Amazon CloudWatch Observability Add-on
         shell: bash
