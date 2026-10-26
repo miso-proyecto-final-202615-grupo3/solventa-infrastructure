@@ -49,7 +49,7 @@ resource "aws_cloudfront_distribution" "frontend" {
   }
 
   dynamic "origin" {
-    for_each = var.api_origin_domain_name != null ? [var.api_origin_domain_name] : []
+    for_each = (var.api_origin_domain_name != null && var.api_origin_domain_name != "" && var.api_origin_domain_name != "null") ? [var.api_origin_domain_name] : []
 
     content {
       domain_name = origin.value
@@ -65,7 +65,7 @@ resource "aws_cloudfront_distribution" "frontend" {
   }
 
   dynamic "ordered_cache_behavior" {
-    for_each = var.api_origin_domain_name != null ? [1] : []
+    for_each = (var.api_origin_domain_name != null && var.api_origin_domain_name != "" && var.api_origin_domain_name != "null") ? [1] : []
 
     content {
       path_pattern             = "/api/*"
