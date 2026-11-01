@@ -42,10 +42,10 @@ eks_cluster_version        = "1.37"
 eks_enable_public_endpoint = true
 eks_public_endpoint_cidrs  = ["0.0.0.0/0"]
 eks_cluster_log_types      = ["api", "audit", "authenticator", "controllerManager", "scheduler"]
-eks_instance_types         = ["m7i-flex.large"]
-eks_desired_size           = 1
+eks_instance_types         = ["c7i-flex.large"]
+eks_desired_size           = 2
 eks_min_size               = 0
-eks_max_size               = 2
+eks_max_size               = 4
 eks_max_unavailable        = 1
 eks_capacity_type          = "ON_DEMAND"
 eks_disk_size              = 40
@@ -63,6 +63,7 @@ ecr_repository_names = [
   "solventa-insurancepolicies-service",
   "solventa-insuranceclaims-service",
   "solventa-payments-service",
+  "solventa-liveness-adapter",
   "solventa-mock-kyc",
   "solventa-mock-opendata",
   "solventa-mock-openfinance"
