@@ -297,50 +297,50 @@ jobs:
               --addon-name amazon-cloudwatch-observability
           fi
 
-      - name: Install cert-manager with Helm
-        shell: bash
-        run: |
-          set -euo pipefail
+      # - name: Install cert-manager with Helm
+      #   shell: bash
+      #   run: |
+      #     set -euo pipefail
 
-          aws eks update-kubeconfig --name "$CLUSTER_NAME"
+      #     aws eks update-kubeconfig --name "$CLUSTER_NAME"
 
-          # helm uninstall cert-manager --namespace cert-manager || true
-          # kubectl delete serviceaccount cert-manager --namespace cert-manager --ignore-not-found=true
+      #     # helm uninstall cert-manager --namespace cert-manager || true
+      #     # kubectl delete serviceaccount cert-manager --namespace cert-manager --ignore-not-found=true
 
-          helm repo add jetstack https://charts.jetstack.io
-          helm repo update
+      #     helm repo add jetstack https://charts.jetstack.io
+      #     helm repo update
 
-          helm upgrade --install cert-manager jetstack/cert-manager \
-            --namespace cert-manager \
-            --create-namespace \
-            --version v1.21.2 \
-            --set crds.enabled=true \
-            --wait \
-            --timeout 10m
+      #     helm upgrade --install cert-manager jetstack/cert-manager \
+      #       --namespace cert-manager \
+      #       --create-namespace \
+      #       --version v1.21.2 \
+      #       --set crds.enabled=true \
+      #       --wait \
+      #       --timeout 10m
 
-      - name: Install AWS Distro for OpenTelemetry Add-on
-        shell: bash
-        run: |
-          set -euo pipefail
+      # - name: Install AWS Distro for OpenTelemetry Add-on
+      #   shell: bash
+      #   run: |
+      #     set -euo pipefail
 
-          # Check if the addon is already installed and ACTIVE
-          ADDON_STATUS=$(aws eks describe-addon \
-            --cluster-name "$CLUSTER_NAME" \
-            --addon-name adot \
-            --query "addon.status" \
-            --output text 2>/dev/null || echo "NOT_FOUND")
+      #     # Check if the addon is already installed and ACTIVE
+      #     ADDON_STATUS=$(aws eks describe-addon \
+      #       --cluster-name "$CLUSTER_NAME" \
+      #       --addon-name adot \
+      #       --query "addon.status" \
+      #       --output text 2>/dev/null || echo "NOT_FOUND")
 
-          if [ "$ADDON_STATUS" = "ACTIVE" ]; then
-            echo "Addon adot is already installed and ACTIVE. Skipping creation."
-          else
-            aws eks create-addon \
-              --cluster-name "$CLUSTER_NAME" \
-              --addon-name adot \
-              --resolve-conflicts OVERWRITE
-            aws eks wait addon-active \
-              --cluster-name "$CLUSTER_NAME" \
-              --addon-name adot
-          fi
+      #     if [ "$ADDON_STATUS" = "ACTIVE" ]; then
+      #       echo "Addon adot is already installed and ACTIVE. Skipping creation."
+      #     else
+      #       aws eks create-addon \
+      #         --cluster-name "$CLUSTER_NAME" \
+      #         --addon-name adot \
+      #         --resolve-conflicts OVERWRITE
+      #       aws eks wait addon-active \
+      #         --cluster-name "$CLUSTER_NAME" \
+      #         --addon-name adot
+      #     fi
 
       - name: Install External Secrets Operator with Helm
         shell: bash
@@ -410,8 +410,8 @@ jobs:
             --output wide
           kubectl get pods -A -l app.kubernetes.io/name=amazon-cloudwatch-observability \
             --output wide
-          kubectl get pods -A -l app.kubernetes.io/name=opentelemetry-operator \
-            --output wide
+          # kubectl get pods -A -l app.kubernetes.io/name=opentelemetry-operator \
+          #   --output wide
           kubectl get pods -A -l app.kubernetes.io/name=external-secrets \
             --output wide
           kubectl get pods -A -l app.kubernetes.io/name=aws-load-balancer-controller \
@@ -422,11 +422,11 @@ jobs:
             --addon-name eks-pod-identity-agent \
             --query 'addon.{name:name,status:status,version:version}' \
             --output table
-          aws eks describe-addon \
-            --cluster-name "$CLUSTER_NAME" \
-            --addon-name adot \
-            --query 'addon.{name:name,status:status,version:version}' \
-            --output table
+          # aws eks describe-addon \
+          #   --cluster-name "$CLUSTER_NAME" \
+          #   --addon-name adot \
+          #   --query 'addon.{name:name,status:status,version:version}' \
+          #   --output table
           aws eks describe-addon \
             --cluster-name "$CLUSTER_NAME" \
             --addon-name amazon-cloudwatch-observability \
