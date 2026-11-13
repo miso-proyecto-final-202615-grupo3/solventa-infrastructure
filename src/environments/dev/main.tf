@@ -180,17 +180,27 @@ module "cognito" {
 #   tags                         = var.tags
 # }
 
-# module "events_queue" {
-#   source = "../../modules/sqs"
+module "paymentapproved_queue" {
+  source = "../../modules/sqs"
 
-#   queue_name                 = "${var.project}-${var.environment}-events"
-#   visibility_timeout_seconds = var.sqs_visibility_timeout_seconds
-#   message_retention_seconds  = var.sqs_message_retention_seconds
-#   kms_master_key_id          = module.kms_key.key_id
-#   redrive_policy             = var.sqs_redrive_policy
-#   principal_services         = var.sqs_principal_services
-#   tags                       = var.tags
-# }
+  queue_name                 = "${var.project}-${var.environment}-paymentapproved"
+  visibility_timeout_seconds = var.sqs_visibility_timeout_seconds
+  message_retention_seconds  = var.sqs_message_retention_seconds
+  redrive_policy             = var.sqs_redrive_policy
+  principal_services         = var.sqs_principal_services
+  tags                       = var.tags
+}
+
+module "insurancepolicyemitted_queue" {
+  source = "../../modules/sqs"
+
+  queue_name                 = "${var.project}-${var.environment}-insurancepolicyemitted"
+  visibility_timeout_seconds = var.sqs_visibility_timeout_seconds
+  message_retention_seconds  = var.sqs_message_retention_seconds
+  redrive_policy             = var.sqs_redrive_policy
+  principal_services         = var.sqs_principal_services
+  tags                       = var.tags
+}
 
 # module "notifications_topic" {
 #   source = "../../modules/sns"

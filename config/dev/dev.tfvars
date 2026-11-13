@@ -66,7 +66,8 @@ ecr_repository_names = [
   "solventa-liveness-adapter",
   "solventa-mock-kyc",
   "solventa-mock-opendata",
-  "solventa-mock-openfinance"
+  "solventa-mock-openfinance",
+  "solventa-mock-paymentprovider"
 ]
 ecr_image_tag_mutability = "MUTABLE"
 ecr_scan_on_push         = true

@@ -2,7 +2,6 @@ resource "aws_sqs_queue" "this" {
   name                       = var.queue_name
   visibility_timeout_seconds = var.visibility_timeout_seconds
   message_retention_seconds  = var.message_retention_seconds
-  kms_master_key_id          = var.kms_master_key_id
   redrive_policy             = var.redrive_policy
   tags                       = merge(var.tags, { Name = var.queue_name })
 }
