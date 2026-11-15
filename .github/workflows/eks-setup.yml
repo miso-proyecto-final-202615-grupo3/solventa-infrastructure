@@ -89,6 +89,29 @@ jobs:
             --resolve-conflicts OVERWRITE \
             --configuration-values '{"env":{"ENABLE_PREFIX_DELEGATION":"true"}}'
 
+      - name: Install Metrics Server Add-on
+        shell: bash
+        run: |
+          set -euo pipefail
+
+          ADDON_NAME=$(aws eks list-addons \
+            --cluster-name "$CLUSTER_NAME" \
+            --query 'addons[?@==`metrics-server`]' \
+            --output text)
+
+          if [ -z "$ADDON_NAME" ]; then
+            aws eks create-addon \
+              --cluster-name "$CLUSTER_NAME" \
+              --addon-name metrics-server \
+              --resolve-conflicts OVERWRITE
+          else
+            echo "Addon metrics-server already exists. Waiting for it to be ACTIVE."
+          fi
+
+          aws eks wait addon-active \
+            --cluster-name "$CLUSTER_NAME" \
+            --addon-name metrics-server
+
       - name: Install AWS Pod Identity Add-on
         shell: bash
         run: |
@@ -430,5 +453,10 @@ jobs:
           aws eks describe-addon \
             --cluster-name "$CLUSTER_NAME" \
             --addon-name amazon-cloudwatch-observability \
+            --query 'addon.{name:name,status:status,version:version}' \
+            --output table
+          aws eks describe-addon \
+            --cluster-name "$CLUSTER_NAME" \
+            --addon-name metrics-server \
             --query 'addon.{name:name,status:status,version:version}' \
             --output table
