@@ -86,21 +86,26 @@ resource "aws_cloudfront_distribution" "frontend" {
     cached_methods         = ["GET", "HEAD", "OPTIONS"]
     compress               = true
     cache_policy_id        = "658327ea-f89d-4fab-a63d-7e88639e58f6" # CachingOptimized
+
+    function_association {
+      event_type   = "viewer-request"
+      function_arn = aws_cloudfront_function.spa_rewrite.arn
+    }
   }
 
-  custom_error_response {
-    error_code            = 403
-    response_code         = 200
-    response_page_path    = "/index.html"
-    error_caching_min_ttl = 10
-  }
+  # custom_error_response {
+  #   error_code            = 403
+  #   response_code         = 200
+  #   response_page_path    = "/index.html"
+  #   error_caching_min_ttl = 10
+  # }
 
-  custom_error_response {
-    error_code            = 404
-    response_code         = 200
-    response_page_path    = "/index.html"
-    error_caching_min_ttl = 10
-  }
+  # custom_error_response {
+  #   error_code            = 404
+  #   response_code         = 200
+  #   response_page_path    = "/index.html"
+  #   error_caching_min_ttl = 10
+  # }
 
   restrictions {
     geo_restriction {
@@ -137,4 +142,29 @@ data "aws_iam_policy_document" "frontend_bucket" {
 resource "aws_s3_bucket_policy" "frontend" {
   bucket = aws_s3_bucket.frontend.id
   policy = data.aws_iam_policy_document.frontend_bucket.json
+}
+
+resource "aws_cloudfront_function" "spa_rewrite" {
+  name    = "${var.bucket_name}-spa-rewrite"
+  runtime = "cloudfront-js-2.0"
+  publish = true
+
+  code = <<-JS
+    function handler(event) {
+      var request = event.request;
+      var uri = request.uri;
+
+      if (uri === '/api' || uri.startsWith('/api/')) {
+        return request;
+      }
+
+      var lastSegment = uri.split('/').pop();
+
+      if (!lastSegment.includes('.')) {
+        request.uri = '/index.html';
+      }
+
+      return request;
+    }
+  JS
 }
