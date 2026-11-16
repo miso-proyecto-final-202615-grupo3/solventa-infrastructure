@@ -83,34 +83,51 @@ jobs:
       - name: Enable ENABLE_PREFIX_DELEGATION EKS VPC CNI Add-on
         shell: bash
         run: |
-          aws eks create-addon \
+          set -euo pipefail
+
+          # Check if the addon is already installed and ACTIVE
+          ADDON_STATUS=$(aws eks describe-addon \
             --cluster-name "$CLUSTER_NAME" \
             --addon-name vpc-cni \
-            --resolve-conflicts OVERWRITE \
-            --configuration-values '{"env":{"ENABLE_PREFIX_DELEGATION":"true"}}'
+            --query "addon.status" \
+            --output text 2>/dev/null || echo "NOT_FOUND")
+
+          if [ "$ADDON_STATUS" = "ACTIVE" ]; then
+            echo "Addon vpc-cni is already installed and ACTIVE. Skipping creation."
+          else
+            aws eks create-addon \
+              --cluster-name "$CLUSTER_NAME" \
+              --addon-name vpc-cni \
+              --resolve-conflicts OVERWRITE \
+              --configuration-values '{"env":{"ENABLE_PREFIX_DELEGATION":"true"}}'
+            aws eks wait addon-active \
+              --cluster-name "$CLUSTER_NAME" \
+              --addon-name vpc-cni
+          fi
 
       - name: Install Metrics Server Add-on
         shell: bash
         run: |
           set -euo pipefail
 
-          ADDON_NAME=$(aws eks list-addons \
+          # Check if the addon is already installed and ACTIVE
+          ADDON_STATUS=$(aws eks describe-addon \
             --cluster-name "$CLUSTER_NAME" \
-            --query 'addons[?@==`metrics-server`]' \
-            --output text)
+            --addon-name metrics-server \
+            --query "addon.status" \
+            --output text 2>/dev/null || echo "NOT_FOUND")
 
-          if [ -z "$ADDON_NAME" ]; then
+          if [ "$ADDON_STATUS" = "ACTIVE" ]; then
+            echo "Addon metrics-server is already installed and ACTIVE. Skipping creation."
+          else
             aws eks create-addon \
               --cluster-name "$CLUSTER_NAME" \
               --addon-name metrics-server \
               --resolve-conflicts OVERWRITE
-          else
-            echo "Addon metrics-server already exists. Waiting for it to be ACTIVE."
+            aws eks wait addon-active \
+              --cluster-name "$CLUSTER_NAME" \
+              --addon-name metrics-server
           fi
-
-          aws eks wait addon-active \
-            --cluster-name "$CLUSTER_NAME" \
-            --addon-name metrics-server
 
       - name: Install AWS Pod Identity Add-on
         shell: bash
