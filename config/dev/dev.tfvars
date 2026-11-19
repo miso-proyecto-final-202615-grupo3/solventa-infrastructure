@@ -57,6 +57,7 @@ eks_labels = {
 
 ecr_repository_names = [
   "solventa-bff-web",
+  "solventa-bff-socios",
   "solventa-bff-mobile",
   "solventa-identity-service",
   "solventa-quotingengine-service",
