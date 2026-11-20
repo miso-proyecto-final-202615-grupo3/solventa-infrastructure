@@ -1,0 +1,17 @@
+{
+  "Version": "2012-10-17",
+  "Statement": [
+    {
+      "Sid": "CreateEndpointForConfiguredApplication",
+      "Effect": "Allow",
+      "Action": ["sns:CreatePlatformEndpoint"],
+      "Resource": "${SNS_PLATFORM_APPLICATION_ARN}"
+    },
+    {
+      "Sid": "PublishAndMaintainMobileEndpoints",
+      "Effect": "Allow",
+      "Action": ["sns:Publish", "sns:GetEndpointAttributes", "sns:SetEndpointAttributes"],
+      "Resource": "${SNS_PLATFORM_ENDPOINT_ARN_WILDCARD}"
+    }
+  ]
+}
