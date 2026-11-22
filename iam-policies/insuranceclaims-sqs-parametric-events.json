@@ -1,0 +1,21 @@
+{
+  "Version": "2012-10-17",
+  "Statement": [
+    {
+      "Sid": "PublishAndConsumeParametricEvents",
+      "Effect": "Allow",
+      "Action": [
+        "sqs:SendMessage",
+        "sqs:ReceiveMessage",
+        "sqs:DeleteMessage",
+        "sqs:ChangeMessageVisibility",
+        "sqs:GetQueueAttributes",
+        "sqs:GetQueueUrl"
+      ],
+      "Resource": [
+        "arn:aws:sqs:us-east-1:<ACCOUNT_ID>:solventa-<ENV>-parametricevents",
+        "arn:aws:sqs:us-east-1:<ACCOUNT_ID>:solventa-<ENV>-parametricevents-dlq"
+      ]
+    }
+  ]
+}

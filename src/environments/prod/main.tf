@@ -202,6 +202,32 @@ module "insurancepolicyemitted_queue" {
   tags                       = var.tags
 }
 
+# HU4.2.3: eventos paramétricos externos (clima, vuelos). Diseño ASR-ESC-002 (HA8): la ingesta de MS Siniestros
+# publica aquí y los consumidores procesan con idempotencia; tras N recepciones fallidas el mensaje pasa a la DLQ.
+module "parametricevents_dlq" {
+  source = "../../modules/sqs"
+
+  queue_name                 = "${var.project}-${var.environment}-parametricevents-dlq"
+  visibility_timeout_seconds = var.sqs_visibility_timeout_seconds
+  message_retention_seconds  = var.sqs_message_retention_seconds
+  principal_services         = var.sqs_principal_services
+  tags                       = var.tags
+}
+
+module "parametricevents_queue" {
+  source = "../../modules/sqs"
+
+  queue_name                 = "${var.project}-${var.environment}-parametricevents"
+  visibility_timeout_seconds = var.sqs_parametricevents_visibility_timeout_seconds
+  message_retention_seconds  = var.sqs_message_retention_seconds
+  redrive_policy = jsonencode({
+    deadLetterTargetArn = module.parametricevents_dlq.queue_arn
+    maxReceiveCount     = var.sqs_parametricevents_max_receive_count
+  })
+  principal_services = var.sqs_principal_services
+  tags               = var.tags
+}
+
 # module "notifications_topic" {
 #   source = "../../modules/sns"
 

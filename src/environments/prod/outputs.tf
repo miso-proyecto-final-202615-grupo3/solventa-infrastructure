@@ -77,3 +77,13 @@ output "storage_bucket_arn" {
 #   description = "ARN of the development notifications topic."
 #   value       = module.notifications_topic.topic_arn
 # }
+
+output "parametricevents_queue_url" {
+  description = "URL of the parametric events queue (MS Siniestros: EVENTOS_PARAMETRICOS_QUEUE_URL)."
+  value       = module.parametricevents_queue.queue_url
+}
+
+output "parametricevents_dlq_url" {
+  description = "URL of the parametric events dead-letter queue (MS Siniestros: EVENTOS_PARAMETRICOS_DLQ_URL)."
+  value       = module.parametricevents_dlq.queue_url
+}
