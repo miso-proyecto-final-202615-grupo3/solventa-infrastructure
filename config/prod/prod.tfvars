@@ -123,10 +123,12 @@ api_route_key                    = "$default"
 api_access_log_retention_in_days = 30
 api_access_log_format            = "{\"requestId\":\"$context.requestId\",\"ip\":\"$context.identity.sourceIp\",\"requestTime\":\"$context.requestTime\",\"httpMethod\":\"$context.httpMethod\",\"routeKey\":\"$context.routeKey\",\"status\":$context.status,\"protocol\":\"$context.protocol\",\"responseLength\":$context.responseLength}"
 
-sqs_visibility_timeout_seconds = 300
-sqs_message_retention_seconds  = 1209600
-sqs_principal_services         = ["sns.amazonaws.com"]
-sqs_redrive_policy             = ""
+sqs_visibility_timeout_seconds                  = 300
+sqs_message_retention_seconds                   = 1209600
+sqs_principal_services                          = ["sns.amazonaws.com"]
+sqs_redrive_policy                              = ""
+sqs_parametricevents_visibility_timeout_seconds = 60
+sqs_parametricevents_max_receive_count          = 5
 
 sns_principal_services = ["sqs.amazonaws.com"]
 sns_endpoint_arns      = []

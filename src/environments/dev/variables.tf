@@ -472,6 +472,18 @@ variable "sqs_principal_services" {
   type        = list(string)
 }
 
+variable "sqs_parametricevents_visibility_timeout_seconds" {
+  description = "Visibility timeout of the parametric events queue: time before a failed message is delivered again (HU4.2.3)."
+  type        = number
+  default     = 60
+}
+
+variable "sqs_parametricevents_max_receive_count" {
+  description = "Deliveries of a parametric event before it moves to its dead-letter queue (HU4.2.3)."
+  type        = number
+  default     = 5
+}
+
 variable "sns_endpoint_arns" {
   description = "Endpoint ARNs subscribed to the notifications topic."
   type        = list(string)
